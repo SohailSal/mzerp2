@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+{% block title %} Alpine fetch {% endblock %}
+{% block content %}
+
+<h1>Add Setting</h1>
+
+<form action="/setting_post" method="post">
+{% csrf_token %}
+
+{% if errors %}
+    {% for error in errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+Name:<br>
+<input name="name" value="{% if name %}{{name}}{% endif %}">
+<br><br>
+Value:<br>
+<input name="value" value="{% if value %}{{value}}{% endif %}">
+<br><br>
+<input type="submit" value="Submit">
+</form>
+
+<strong>{{user.username}}</strong>
+
+{% endblock %}

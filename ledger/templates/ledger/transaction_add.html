@@ -1,0 +1,190 @@
+{% extends "base/base.html" %}
+{% block title %} Insert Transaction {% endblock %}
+{% block content %}
+
+  <h3>Insert Transaction</h3>
+  <div x-data="handler()" x-cloak>
+    <form class="row g-3" id="transactionForm" @submit.prevent="submit">
+        <template x-if="errors">
+            <div class="alert alert-danger">
+            <template x-for="(error, index) in errors">
+                <p>
+                <strong><span x-text="index"></strong></span>: <span x-text="error"></span>
+                </p>
+            </template>
+            <button @click="hideMsg" class="alert alert-secondary">X</button>
+            </div>
+        </template>
+        <template x-if="messages">
+            <div class="alert alert-success">
+            <template x-for="(message, index) in messages">
+                <p>
+                <strong><span x-text="index"></strong></span>: <span x-text="message"></span>
+                </p>
+            </template>
+            <button @click="hideMsg" class="alert alert-secondary">X</button>
+            </div>
+        </template>
+        <div class="col-md-6">
+          <label for="ref" class="form-label">Ref</label>
+          <input type="text" x-model="ref" class="form-control" id="ref">
+        </div>
+        <div class="col-md-6">
+          <label for="date" class="form-label">Date</label>
+          <input type="date" x-model="date" class="form-control" id="date">
+        </div>
+        <div class="col-12">
+          <label for="description" class="form-label">Description</label>
+          <input type="text" x-model="description" class="form-control" id="description" placeholder="To record...">
+        </div>
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Account</th>
+                    <th scope="col">Debit</th>
+                    <th scope="col">Credit</th>
+                    <th scope="col">Remove</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="(entry, index) in entries" :key="index">
+                  <tr>
+                    <td scope="row">    <select class="form-select" x-model="entry.account">
+                        <option value="0" selected>Select account:</option>
+                        <template x-for="option in {{accounts}}" :key="option.id">
+                            <option :value="option.id" x-text="option.name"></option>
+                        </template>
+                    </select>
+                </td>
+                    <td><input x-model="entry.debit" type="number" class="form-control" @change="debitChange(index)"></td>
+                    <td><input x-model="entry.credit" type="number" class="form-control" @change="creditChange(index)"></td>
+                    <td><template x-if="index>1"><button type="button" class="btn btn-danger btn-small" @click="removeEntry(index)">&times;</button></template></td>
+                  </tr>
+                  </template>
+                </tbody>
+                <tfoot>
+                     <tr>
+                      <td>
+                        <label for="difference" class="form-label">Difference:</label>
+                        <input type="number" x-model="difference" readonly class="form-control"/>
+                      </td>
+                      <td>
+                        <label for="tdebit" class="form-label">Total Debit:</label>
+                        <input type="number" x-model="tdebit" readonly class="form-control"/>
+                      </td>
+                      <td>
+                        <label for="tcredit" class="form-label">Total Credit:</label>
+                        <input type="number" x-model="tcredit" readonly class="form-control"/>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="text-right"><button type="button" class="btn btn-secondary" @click="addEntry()">Add Entry Row</button></td>
+                      <td colspan="3"><button type="submit" class="btn btn-primary" :disabled="formLoading" x-text="submitText"></button></td>
+                    </tr>
+                </tfoot>
+            </table>
+         </div>
+
+      </form>
+    </div>
+
+<script>
+    function handler() {
+    return {
+        messages: '',
+        errors: '',
+        ref: '',
+        date: '',
+        description: '',
+        entries: [{
+            account: '',
+            debit: '',
+            credit: '',
+            },
+            {
+            account: '',
+            debit: '',
+            credit: '',
+        }],
+        tdebit: 0,
+        tcredit: 0,
+        difference: 0,
+        formLoading: false,
+        submitText: 'Insert Transaction',
+
+        addEntry() {
+          this.entries.push({
+            account: '',
+            debit: '',
+            credit: '',
+         });
+        },
+        removeEntry(index) {
+            this.entries.splice(index, 1);
+            this.total();
+        },
+        debitChange(index) {
+            let entry = this.entries[index];
+            entry.credit = '';
+            this.total();
+        },        
+        creditChange(index) {
+            let entry = this.entries[index];
+            entry.debit = '';
+            this.total();
+        },
+        total() {
+            this.tdebit = 0;
+            this.tcredit = 0;
+            let dite = 0;
+            let cite = 0;
+            for (var i = 0; i < this.entries.length; i++) {
+                dite = this.entries[i].debit ? parseFloat(this.entries[i].debit) : 0;
+                cite = this.entries[i].credit ? parseFloat(this.entries[i].credit) : 0;
+                this.tdebit = this.tdebit + dite;
+                this.tcredit = this.tcredit + cite;
+            }
+            this.difference = this.tdebit - this.tcredit;
+        },
+        submit(event) {
+            event.preventDefault();
+            this.formLoading = true;
+            this.submitText = 'Submitting...';
+            const endpointUrl = "transaction_post"
+            fetch(endpointUrl, {
+                method: "post",
+                body: JSON.stringify({
+                    entries: this.entries,
+                    ref: this.ref,
+                    date: this.date,
+                    description: this.description,
+                }),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                this.errors = data.errors
+                this.messages = data.messages
+            })
+            .finally(()=>{
+                this.formLoading = false;
+                this.submitText = 'Insert Transaction';
+            });
+        },
+        hideMsg(){
+            this.errors = ''
+            this.messages = ''
+        }
+      }
+    }
+</script>
+<style>
+    [x-cloak] {display: none !important;  }
+</style>
+{% endblock %}

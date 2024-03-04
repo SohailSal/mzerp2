@@ -1,0 +1,44 @@
+{% extends "base/base.html" %}
+{% block title %} Settings {% endblock %}
+{% block content %}
+
+          <h2>Settings</h2>
+            <div x-data="{myvar: '{{ hello }}' }" class="container">
+              <p x-text="myvar"></p>
+            </div>
+            <strong>{{user.username}}</strong>
+            <div>
+              <a href="{% url 'base:setting_add' %}" class="btn btn-outline-primary btn-sm">Add Setting</a>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-striped table-sm">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for setting in settings %}
+                  <tr>
+                    <td>{{ setting.id }}</td>
+                    <td>{{ setting.name }}</td>
+                    <td>{{ setting.value }}</td>
+                    <td>
+                      <div class="row row-cols-lg-auto g-3">
+                        <a href="/edit/{{setting.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+                        <form action="{% url 'base:setting_delete' setting.pk %}" method="post" class="">
+                          {% csrf_token %}
+                          <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+{% endblock %}
