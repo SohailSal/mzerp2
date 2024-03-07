@@ -26,16 +26,20 @@
           </div>
       </template>
       <div class="col-md-6">
-        <label for="ref" class="form-label">Ref</label>
-        <input type="text" x-model="ref" class="form-control" id="ref">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" x-model="name" class="form-control" id="name">
       </div>
       <div class="col-md-6">
-        <label for="date" class="form-label">Date</label>
-        <input type="date" x-model="date" class="form-control" id="date">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" x-model="email" class="form-control" id="email">
+      </div>
+      <div class="col-md-6">
+        <label for="phone" class="form-label">Phone</label>
+        <input type="text`" x-model="phone" class="form-control" id="phone">
       </div>
       <div class="col-12">
-        <label for="description" class="form-label">Description</label>
-        <input type="text" x-model="description" class="form-control" id="description" placeholder="To record...">
+        <label for="address" class="form-label">Address</label>
+        <input type="textarea" x-model="address" class="form-control" id="address">
       </div>
     </form>
   </div>
@@ -45,9 +49,10 @@
   return {
       messages: '',
       errors: '',
-      ref: '',
-      date: '',
-      description: '',
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
       formLoading: false,
       submitText: 'Insert Transaction',
 
@@ -60,9 +65,10 @@
               method: "post",
               body: JSON.stringify({
                   entries: this.entries,
-                  ref: this.ref,
-                  date: this.date,
-                  description: this.description,
+                  name: this.name,
+                  email: this.email,
+                  phone: this.phone,
+                  address: this.address,
               }),
               headers: {
                   'X-CSRFToken': '{{ csrf_token }}',
