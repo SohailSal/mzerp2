@@ -41,6 +41,9 @@
         <label for="address" class="form-label">Address</label>
         <input type="textarea" x-model="address" class="form-control" id="address">
       </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary" :disabled="formLoading" x-text="submitText"></button>
+      </div>
     </form>
   </div>
 
@@ -54,13 +57,13 @@
       phone: '',
       address: '',
       formLoading: false,
-      submitText: 'Insert Transaction',
+      submitText: 'Insert Customer',
 
       submit(event) {
           event.preventDefault();
           this.formLoading = true;
           this.submitText = 'Submitting...';
-          const endpointUrl = "transaction_post"
+          const endpointUrl = "customer_post"
           fetch(endpointUrl, {
               method: "post",
               body: JSON.stringify({
