@@ -4,6 +4,7 @@ from django.urls import reverse
 import json
 from django.db import transaction as trans
 from .models import Customer
+from ledger.models import Category, Account
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError 
 from icecream import ic
@@ -23,7 +24,11 @@ def customer_post(request):
 
 	try:
 		with trans.atomic():
-			customer = Customer(name=name, email=email, phone=phone, address=address)
+			category = Category.objects.filter(name__iexact='debtors').first()
+			account = Account(name=name,account_number=1112,category=category)
+			account.full_clean()
+			account.save()
+			customer = Customer(name=name, email=email, phone=phone, address=address, account=account)
 			customer.full_clean()
 			customer.save()
 	except (ValidationError, DatabaseError) as e:
