@@ -28,7 +28,9 @@ class Invoice(models.Model):
     invoice_date = models.DateField()
     amount = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     def __str__(self):
         return self.invoice_number
 
@@ -41,3 +43,11 @@ class InvoiceItem(models.Model):
 
     def __str__(self):
         return self.invoice.invoice_number
+
+    def select(self):
+        return {
+            'name': self.item.name,
+            'quantity': float(self.quantity),
+            'price': float(self.rate),
+            'discount': float(10.0),
+        }

@@ -3,6 +3,7 @@ from django.db import models
 class Category(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
+    category_number = models.CharField(max_length=20, null=True, blank=True)
     level = models.PositiveSmallIntegerField()
     parent_category = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
@@ -14,6 +15,8 @@ class Account(models.Model):
     account_number = models.CharField(max_length=20, unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -37,6 +40,8 @@ class Transaction(models.Model):
     ref = models.CharField(max_length=20, blank=False, default=None)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     description = models.TextField(blank=False, default=None)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.ref
@@ -46,6 +51,8 @@ class Entry(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     debit = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
     credit = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     def __str__(self):
         return f"Entry {self.id}"

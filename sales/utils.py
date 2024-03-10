@@ -1,0 +1,111 @@
+import random
+from ledger.models import Category, Account
+from .models import Invoice
+from icecream import ic
+from django.http import JsonResponse, HttpResponse, FileResponse
+from django.shortcuts import render, get_object_or_404, redirect
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.enums import TA_JUSTIFY
+from reportlab.lib.units import inch
+from reportlab.rl_config import defaultPageSize
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
+
+def generate_random_number():
+    account_number = ""
+    
+    # Generate the first digit (1-9)
+    first_digit = random.randint(1, 9)
+    account_number += str(first_digit)
+    
+    # Generate the remaining digits (0-9)
+    for _ in range(9):
+        digit = random.randint(0, 9)
+        account_number += str(digit)
+    
+    return account_number
+
+def generate_account_number(request):
+    account_number = ""
+    account_array = []
+    category = Category.objects.filter(name__iexact='debtors').first()
+    parent_cat = category.parent_category
+    current_cat = category
+    for i in range(category.level):
+        account_array.append(current_cat.category_number.zfill(2))
+        current_cat = parent_cat
+        parent_cat = current_cat.parent_category
+    account_array.append(current_cat.category_number)
+    account_array.reverse()
+    account_array.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
+    # ic(category.account_set.all())
+    str1 = ""
+    for ele in account_array:
+        str1 += ele
+ 
+    ic(account_array)
+    ic(str1)
+    return JsonResponse({'message':'fine'})
+
+def generate_invoice(id):
+    invoice = get_object_or_404(Invoice, pk=id)
+    ic(invoice)
+    # ic(invoice.invoiceitem_set.all())
+    products = [i.select() for i in invoice.invoiceitem_set.all()]
+    ic(products)
+	# accounts = [i.select() for i in Account.objects.all()]
+    company_name = "Your Company Name"
+    company_address = "Your Company Address"
+    company_contact = "Phone: xxx-xxx-xxxx, Email: your_email@example.com"
+    client_name = "Client Name"
+    client_address = "Client Address"
+    invoice_number = id
+    invoice_date = "2024-02-09"
+    oldproducts = [
+		{"name": "Prod 1", "quantity": 2, "price": 10.00, "discount": 10},
+		{"name": "Prod 2", "quantity": 1, "price": 25.00, "discount": 5},
+	]
+
+    # buffer = io.BytesIO()
+    # c = canvas.Canvas(buffer, pagesize=letter)
+    c = canvas.Canvas("form.pdf", pagesize=letter)
+
+	# Define styles
+    styles = getSampleStyleSheet()
+    normal = styles["h1"]
+    heading_style = ParagraphStyle(name="Heading", fontSize=16, bold=True)
+    subheading_style = ParagraphStyle(name="Subheading", fontSize=12)
+    data_style = ParagraphStyle(name="Data", fontSize=10)
+
+    c.drawString(30, 750, company_name)
+    c.drawString(30, 730, company_address)
+    c.drawString(30, 710, company_contact)
+    c.drawString(400, 750, "Bill To:")
+    c.drawString(400, 730, client_name)
+    c.drawString(400, 710, client_address)
+    c.drawString(30, 680, f"Invoice Number: {invoice_number}")
+    c.drawString(30, 660, f"Invoice Date: {invoice_date}")
+
+	# Create product table
+    data = [[Paragraph("Product", heading_style), Paragraph("Quantity", heading_style), Paragraph("Price", heading_style), Paragraph("Discount", heading_style), Paragraph("Amount", heading_style)]]
+    data.extend([[Paragraph(p["name"], normal), Paragraph(str(p["quantity"]), normal), Paragraph(f"${p['price']:.2f}", data_style), Paragraph(f"{p['discount']}%", data_style), Paragraph(f"${p['quantity'] * p['price'] * (1 - p['discount']/100):.2f}", data_style)] for p in products])
+
+    table = Table(data, colWidths=[100, 100, 70, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
+    table.wrapOn(c, 100, 520)
+    table.drawOn(c, 100, 520)
+
+	# Calculate total amount
+    total_amount = sum([p["quantity"] * p["price"] * (1 - p["discount"]/100) for p in products])
+
+	# Add total amount
+    c.drawString(30, 370, "Total Amount:")
+    c.drawString(440, 370, f"${total_amount:.2f}")
+
+    # c.showPage()
+    # c.save()
+    # buffer.seek(0)
+    # return FileResponse(buffer, as_attachment=True, filename="invoice.pdf")
+    c.save()
+    # return HttpResponse('hello pdf2...see home folder')

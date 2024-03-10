@@ -1,13 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 import json
 from django.db import transaction as trans
-from .models import Customer
+from .models import Customer, Invoice
 from ledger.models import Category, Account
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError 
 from icecream import ic
+from . import utils
 
 def customers(request):
 	return render(request, 'sales/index.html')
@@ -25,7 +26,7 @@ def customer_post(request):
 	try:
 		with trans.atomic():
 			category = Category.objects.filter(name__iexact='debtors').first()
-			account = Account(name=name,account_number=1112,category=category)
+			account = Account(name=name,account_number=utils.generate_random_number(),category=category)
 			account.full_clean()
 			account.save()
 			customer = Customer(name=name, email=email, phone=phone, address=address, account=account)
@@ -36,3 +37,8 @@ def customer_post(request):
 		return JsonResponse({'errors':e.message_dict}, safe=False)
 
 	return JsonResponse({'messages':{'success':'The customer saved!'}}, safe=False)
+
+def invoice(request,id):
+	utils.generate_invoice(id)
+	return HttpResponse('hello pdf2...see home folder')
+	# return render(request, 'sales/index.html', context={})
