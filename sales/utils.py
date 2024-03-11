@@ -28,7 +28,6 @@ def generate_random_number():
     return account_number
 
 def generate_account_number(request):
-    account_number = ""
     account_array = []
     category = Category.objects.filter(name__iexact='debtors').first()
     parent_cat = category.parent_category
@@ -51,30 +50,25 @@ def generate_account_number(request):
 
 def generate_invoice(id):
     invoice = get_object_or_404(Invoice, pk=id)
-    ic(invoice)
+    # ic(invoice)
     # ic(invoice.invoiceitem_set.all())
     products = [i.select() for i in invoice.invoiceitem_set.all()]
-    ic(products)
+    # ic(products)
 	# accounts = [i.select() for i in Account.objects.all()]
-    company_name = "Your Company Name"
-    company_address = "Your Company Address"
-    company_contact = "Phone: xxx-xxx-xxxx, Email: your_email@example.com"
-    client_name = "Client Name"
-    client_address = "Client Address"
-    invoice_number = id
-    invoice_date = "2024-02-09"
+    company_name = "Muniff Ziauddin & Co."
+    company_address = "F/17/3, Executive Centre"
+    company_contact = "Phone: xxx-xxx-xxxx, Email: info@mzco.com.pk"
     oldproducts = [
 		{"name": "Prod 1", "quantity": 2, "price": 10.00, "discount": 10},
 		{"name": "Prod 2", "quantity": 1, "price": 25.00, "discount": 5},
 	]
 
-    # buffer = io.BytesIO()
-    # c = canvas.Canvas(buffer, pagesize=letter)
-    c = canvas.Canvas("form.pdf", pagesize=letter)
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
 
 	# Define styles
     styles = getSampleStyleSheet()
-    normal = styles["h1"]
+    normal = styles["h3"]
     heading_style = ParagraphStyle(name="Heading", fontSize=16, bold=True)
     subheading_style = ParagraphStyle(name="Subheading", fontSize=12)
     data_style = ParagraphStyle(name="Data", fontSize=10)
@@ -82,11 +76,11 @@ def generate_invoice(id):
     c.drawString(30, 750, company_name)
     c.drawString(30, 730, company_address)
     c.drawString(30, 710, company_contact)
-    c.drawString(400, 750, "Bill To:")
-    c.drawString(400, 730, client_name)
-    c.drawString(400, 710, client_address)
-    c.drawString(30, 680, f"Invoice Number: {invoice_number}")
-    c.drawString(30, 660, f"Invoice Date: {invoice_date}")
+    c.drawString(300, 750, "Bill To:")
+    c.drawString(300, 730, invoice.customer.name)
+    c.drawString(300, 710, invoice.customer.address)
+    c.drawString(30, 680, f"Invoice Number: {invoice.invoice_number}")
+    c.drawString(30, 660, f"Invoice Date: {invoice.invoice_date}")
 
 	# Create product table
     data = [[Paragraph("Product", heading_style), Paragraph("Quantity", heading_style), Paragraph("Price", heading_style), Paragraph("Discount", heading_style), Paragraph("Amount", heading_style)]]
@@ -103,9 +97,7 @@ def generate_invoice(id):
     c.drawString(30, 370, "Total Amount:")
     c.drawString(440, 370, f"${total_amount:.2f}")
 
-    # c.showPage()
-    # c.save()
-    # buffer.seek(0)
-    # return FileResponse(buffer, as_attachment=True, filename="invoice.pdf")
+    c.showPage()
     c.save()
-    # return HttpResponse('hello pdf2...see home folder')
+    buffer.seek(0)
+    return buffer

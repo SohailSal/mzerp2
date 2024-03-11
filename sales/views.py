@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, FileResponse
 from django.urls import reverse
 import json
 from django.db import transaction as trans
@@ -39,6 +39,5 @@ def customer_post(request):
 	return JsonResponse({'messages':{'success':'The customer saved!'}}, safe=False)
 
 def invoice(request,id):
-	utils.generate_invoice(id)
-	return HttpResponse('hello pdf2...see home folder')
-	# return render(request, 'sales/index.html', context={})
+	buffer = utils.generate_invoice(id)
+	return FileResponse(buffer, as_attachment=True, filename="invoice.pdf")
