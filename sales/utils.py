@@ -85,7 +85,7 @@ def generate_invoice(id):
 
 	# Create product table
     data = [[Paragraph("Product", heading_style), Paragraph("Quantity", heading_style), Paragraph("Price", heading_style), Paragraph("Discount", heading_style), Paragraph("Amount", heading_style)]]
-    data.extend([[Paragraph(p["name"], normal), Paragraph(str(p["quantity"]), normal), Paragraph(f"${p['price']:.2f}", data_style), Paragraph(f"{p['discount']}%", data_style), Paragraph(f"${p['quantity'] * p['price'] * (1 - p['discount']/100):.2f}", data_style)] for p in products])
+    data.extend([[Paragraph(p["name"], normal), Paragraph(str(p["quantity"]), normal), Paragraph(f"Rs.{p['price']:.2f}", data_style), Paragraph(f"{p['discount']}%", data_style), Paragraph(f"Rs.{p['quantity'] * p['price'] * (1 - p['discount']/100):.2f}", data_style)] for p in products])
 
     table = Table(data, colWidths=[100, 100, 70, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
     table.wrapOn(c, 100, 520)
@@ -113,10 +113,10 @@ def generate_invoice(id):
                         ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                         ])
     s = styles["BodyText"]
-    # s.wordWrap = 'CJK'
+    s.wordWrap = 'CJK'
     # data3 = [data2]
     t=Table(data2)
-    # t.setStyle(style)
+    t.setStyle(style)
     t.wrapOn(c, 100, 400)
     t.drawOn(c, 100, 400)
 
@@ -126,7 +126,7 @@ def generate_invoice(id):
 
 	# Add total amount
     c.drawString(30, 170, "Total Amount:")
-    c.drawString(540, 170, f"${total_amount:.2f}")
+    c.drawString(540, 170, f"Rs.{total_amount:.2f}")
 
     c.showPage()
     c.save()
