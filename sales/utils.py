@@ -12,6 +12,7 @@ from reportlab.lib.units import inch
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
+from reportlab.lib import colors
 
 def generate_random_number():
     account_number = ""
@@ -90,12 +91,42 @@ def generate_invoice(id):
     table.wrapOn(c, 100, 520)
     table.drawOn(c, 100, 520)
 
+
+    data2 = [
+    ["Letter", "Number", "Stuff", "Long stuff that should be wrapped"],
+    ["A", "01", "ABCD", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"],
+    ["B", "02", "CDEF", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"],
+    ["C", "03", "SDFSDF", "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"],
+    ["D", "04", "SDFSDF", "DDDDDDDDDDDDDDDDDDDDDDDD DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"],
+    ["E", "05", "GHJGHJGHJ", "EEEEEEEEEEEEEE EEEEEEEEEEEEEEEEE EEEEEEEEEEEEEEEEEEEE"],
+    ]
+
+    #TODO: Get this line right instead of just copying it from the docs
+    style = TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
+                        ('TEXTCOLOR',(1,1),(-2,-2),colors.red),
+                        ('VALIGN',(0,0),(0,-1),'TOP'),
+                        ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
+                        ('ALIGN',(0,-1),(-1,-1),'CENTER'),
+                        ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
+                        ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
+                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ])
+    s = styles["BodyText"]
+    # s.wordWrap = 'CJK'
+    # data3 = [data2]
+    t=Table(data2)
+    # t.setStyle(style)
+    t.wrapOn(c, 100, 400)
+    t.drawOn(c, 100, 400)
+
+
 	# Calculate total amount
     total_amount = sum([p["quantity"] * p["price"] * (1 - p["discount"]/100) for p in products])
 
 	# Add total amount
-    c.drawString(30, 370, "Total Amount:")
-    c.drawString(440, 370, f"${total_amount:.2f}")
+    c.drawString(30, 170, "Total Amount:")
+    c.drawString(540, 170, f"${total_amount:.2f}")
 
     c.showPage()
     c.save()
