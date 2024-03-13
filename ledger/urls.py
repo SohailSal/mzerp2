@@ -10,4 +10,5 @@ urlpatterns = [
 #    path('edit/<int:id>', views.transaction_edit, name='transaction_edit'),
 #    path('transaction_edit_post', views.transaction_edit_post, name='transaction_edit_post'),
     path('transaction_delete/<int:id>', views.transaction_delete, name='transaction_delete'),
+    path('report', views.report, name='report'),
 ]

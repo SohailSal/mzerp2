@@ -1,47 +1,60 @@
 import xlsxwriter
+import io
+from django.http import HttpResponse
 
-# Create a new workbook and add a worksheet
-workbook = xlsxwriter.Workbook('ledger.xlsx')
-worksheet = workbook.add_worksheet()
+def generate_report():
+    # Create a new workbook and add a worksheet
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet('rep')
 
-# Define the column headers
-headers = ['Date', 'Particulars', 'Debit', 'Credit', 'Running Balance']
+    # Define the column headers
+    headers = ['Date', 'Ref', 'Description', 'Debit', 'Credit', 'Running Balance']
 
-# Write the column headers to the worksheet
-for col, header in enumerate(headers):
-    worksheet.write(0, col, header)
+    # Write the column headers to the worksheet
+    for col, header in enumerate(headers):
+        worksheet.write(0, col, header)
 
-# Sample data for the ledger
-ledger_data = [
-    ['2024-01-01', 'Sales', 1000, 0],
-    ['2024-01-05', 'Purchase', 0, 500],
-    ['2024-01-10', 'Salary', 0, 200],
-    ['2024-01-15', 'Rent', 500, 0],
-]
+    # Sample data for the ledger
+    ledger_data = [
+        ['2024-01-01', 'JV/001', 'Sales', 1000, 0],
+        ['2024-01-05', 'JV/002', 'Purchase', 0, 500],
+        ['2024-01-10', 'JV/003', 'Salary', 0, 200],
+        ['2024-01-15', 'JV/004', 'Rent', 500, 0],
+    ]
 
-# Starting balance
-balance = 0
+    # Starting balance
+    balance = 0
 
-# Write the ledger data to the worksheet
-for row, data in enumerate(ledger_data, start=1):
-    date, particulars, debit, credit = data
-    balance += debit - credit
+    # Write the ledger data to the worksheet
+    for row, data in enumerate(ledger_data, start=1):
+        date, ref, description, debit, credit = data
+        balance += debit - credit
 
-    worksheet.write(row, 0, date)
-    worksheet.write(row, 1, particulars)
-    worksheet.write(row, 2, debit)
-    worksheet.write(row, 3, credit)
-    worksheet.write(row, 4, balance)
+        worksheet.write(row, 0, date)
+        worksheet.write(row, 1, ref)
+        worksheet.write(row, 2, description)
+        worksheet.write(row, 3, debit)
+        worksheet.write(row, 4, credit)
+        worksheet.write(row, 5, balance)
 
-# Write the summary
-total_debit = sum(data[2] for data in ledger_data)
-total_credit = sum(data[3] for data in ledger_data)
+    # Write the summary
+    total_debit = sum(data[3] for data in ledger_data)
+    total_credit = sum(data[4] for data in ledger_data)
 
-worksheet.write(row + 2, 1, 'Total Debit')
-worksheet.write(row + 2, 2, total_debit)
+    worksheet.write(row + 2, 1, 'Totals')
+    worksheet.write(row + 2, 3, total_debit)
 
-worksheet.write(row + 3, 1, 'Total Credit')
-worksheet.write(row + 3, 3, total_credit)
+    # worksheet.write(row + 3, 1, 'Total Credit')
+    worksheet.write(row + 2, 4, total_credit)
 
-# Save the workbook
-workbook.close()
+    # Save the workbook
+    workbook.close()
+    output.seek(0)
+    filename = "django_simple.xlsx"
+    response = HttpResponse(
+        output,
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
+    return response

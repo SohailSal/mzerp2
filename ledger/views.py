@@ -10,6 +10,7 @@ from icecream import ic
 import fiscalyear
 import json
 import decimal
+from . import utils
 
 def transactions(request):
 	transactions = Transaction.objects.order_by('id')
@@ -60,3 +61,7 @@ def transaction_delete(request,id):
 #     for x in data['entries']:
 #     	print(x['account'])
 #     return JsonResponse({'status': 'success'})
+
+def report(request):
+	response = utils.generate_report()
+	return response

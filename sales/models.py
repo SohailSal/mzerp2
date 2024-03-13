@@ -1,5 +1,5 @@
 from django.db import models
-from ledger.models import Account
+from ledger.models import Account, Transaction
 
 class Customer(models.Model):
     name = models.CharField(max_length=255)
@@ -23,6 +23,7 @@ class Item(models.Model):
         return self.name
 
 class Invoice(models.Model):
+    transaction = models.OneToOneField(Transaction, null=True, blank=True, on_delete=models.CASCADE)
     invoice_number = models.CharField(max_length=255)
     customer = models.ForeignKey(Customer, null=True, blank=True, on_delete=models.CASCADE)
     invoice_date = models.DateField()

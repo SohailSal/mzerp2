@@ -51,8 +51,15 @@ class Entry(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     debit = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
     credit = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"Entry {self.id}"
+
+    def ledger(self):
+        return {
+            'date': self.transaction.date,
+            'ref': self.transaction.ref,
+            'description': self.transaction.description,
+            'debit': float(self.debit),
+            'credit': float(self.credit),
+        }

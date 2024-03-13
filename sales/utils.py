@@ -13,6 +13,7 @@ from reportlab.rl_config import defaultPageSize
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
 from reportlab.lib import colors
+from num2words import num2words
 
 def generate_random_number():
     account_number = ""
@@ -130,6 +131,7 @@ def generate_invoice(id):
 	# Add total amount
     c.drawString(30, 170, "Total Amount:")
     c.drawString(540, 170, f"Rs.{total_amount:.2f}")
+    c.drawString(30, 150, num2words(total_amount))
 
     c.showPage()
     c.save()
