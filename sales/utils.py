@@ -105,20 +105,23 @@ def generate_invoice(id):
     style = TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
                         ('TEXTCOLOR',(1,1),(-2,-2),colors.red),
                         ('VALIGN',(0,0),(0,-1),'TOP'),
-                        ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
-                        ('ALIGN',(0,-1),(-1,-1),'CENTER'),
-                        ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
-                        ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
+                        # ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
+                        # ('ALIGN',(0,-1),(-1,-1),'CENTER'),
+                        # ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
+                        # ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
                         ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.5, colors.black),
                         ])
     s = styles["BodyText"]
     s.wordWrap = 'CJK'
     # data3 = [data2]
-    t=Table(data2)
+    data3 = [[Paragraph("Product", s), Paragraph("Quantity", s), Paragraph("Price", s), Paragraph("Discount", s)]]
+    data3.extend([[Paragraph(cell,s) for cell in row] for row in data2])
+    # data3 = [[Paragraph(cell) for cell in row] for row in data2]
+    t=Table(data3, colWidths=[100, 100, 70, 200, 100])
     t.setStyle(style)
-    t.wrapOn(c, 100, 400)
-    t.drawOn(c, 100, 400)
+    t.wrapOn(c, 100, 250)
+    t.drawOn(c, 100, 250)
 
 
 	# Calculate total amount
