@@ -41,17 +41,19 @@ def generate_report(ledger_data):
     # # Write the summary
     # total_debit = sum(data[3] for data in ledger_data)
     # total_credit = sum(data[4] for data in ledger_data)
-
+    format1 = workbook.add_format()
+    format1.set_num_format('d mmmm yyyy')
+    format2 = workbook.add_format({'num_format': '#,##0.00'})
 
     for row, data in enumerate(ledger_data, start=1):
         balance += float(data['debit']) - float(data['credit'])
 
-        worksheet.write(row, 0, data['date'])
+        worksheet.write(row, 0, data['date'], format1)
         worksheet.write(row, 1, data['ref'])
         worksheet.write(row, 2, data['description'])
-        worksheet.write(row, 3, data['debit'])
-        worksheet.write(row, 4, data['credit'])
-        worksheet.write(row, 5, balance)
+        worksheet.write(row, 3, data['debit'], format2)
+        worksheet.write(row, 4, data['credit'], format2)
+        worksheet.write(row, 5, balance, format2)
 
     # Write the summary
     total_debit = sum(float(data['debit']) for data in ledger_data)
@@ -60,12 +62,13 @@ def generate_report(ledger_data):
 
 
     worksheet.write(row + 2, 1, 'Totals')
-    worksheet.write(row + 2, 3, total_debit)
+    worksheet.write(row + 2, 3, total_debit, format2)
 
     # worksheet.write(row + 3, 1, 'Total Credit')
-    worksheet.write(row + 2, 4, total_credit)
+    worksheet.write(row + 2, 4, total_credit, format2)
 
     # Save the workbook
+    worksheet.autofit()
     workbook.close()
     output.seek(0)
     filename = "django_simple.xlsx"
