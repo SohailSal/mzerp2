@@ -2,7 +2,7 @@ import xlsxwriter
 import io
 from django.http import HttpResponse
 
-def generate_report():
+def generate_report(ledger_data):
     # Create a new workbook and add a worksheet
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output)
@@ -16,31 +16,48 @@ def generate_report():
         worksheet.write(0, col, header)
 
     # Sample data for the ledger
-    ledger_data = [
-        ['2024-01-01', 'JV/001', 'Sales', 1000, 0],
-        ['2024-01-05', 'JV/002', 'Purchase', 0, 500],
-        ['2024-01-10', 'JV/003', 'Salary', 0, 200],
-        ['2024-01-15', 'JV/004', 'Rent', 500, 0],
-    ]
+    # ledger_data = [
+    #     ['2024-01-01', 'JV/001', 'Sales', 1000, 0],
+    #     ['2024-01-05', 'JV/002', 'Purchase', 0, 500],
+    #     ['2024-01-10', 'JV/003', 'Salary', 0, 200],
+    #     ['2024-01-15', 'JV/004', 'Rent', 500, 0],
+    # ]
 
     # Starting balance
     balance = 0
 
     # Write the ledger data to the worksheet
-    for row, data in enumerate(ledger_data, start=1):
-        date, ref, description, debit, credit = data
-        balance += debit - credit
+    # for row, data in enumerate(ledger_data, start=1):
+    #     date, ref, description, debit, credit = data
+    #     balance += float(debit) - float(credit)
 
-        worksheet.write(row, 0, date)
-        worksheet.write(row, 1, ref)
-        worksheet.write(row, 2, description)
-        worksheet.write(row, 3, debit)
-        worksheet.write(row, 4, credit)
+    #     worksheet.write(row, 0, date)
+    #     worksheet.write(row, 1, ref)
+    #     worksheet.write(row, 2, description)
+    #     worksheet.write(row, 3, debit)
+    #     worksheet.write(row, 4, credit)
+    #     worksheet.write(row, 5, balance)
+
+    # # Write the summary
+    # total_debit = sum(data[3] for data in ledger_data)
+    # total_credit = sum(data[4] for data in ledger_data)
+
+
+    for row, data in enumerate(ledger_data, start=1):
+        balance += float(data['debit']) - float(data['credit'])
+
+        worksheet.write(row, 0, data['date'])
+        worksheet.write(row, 1, data['ref'])
+        worksheet.write(row, 2, data['description'])
+        worksheet.write(row, 3, data['debit'])
+        worksheet.write(row, 4, data['credit'])
         worksheet.write(row, 5, balance)
 
     # Write the summary
-    total_debit = sum(data[3] for data in ledger_data)
-    total_credit = sum(data[4] for data in ledger_data)
+    total_debit = sum(float(data['debit']) for data in ledger_data)
+    total_credit = sum(float(data['credit']) for data in ledger_data)
+
+
 
     worksheet.write(row + 2, 1, 'Totals')
     worksheet.write(row + 2, 3, total_debit)

@@ -63,5 +63,7 @@ def transaction_delete(request,id):
 #     return JsonResponse({'status': 'success'})
 
 def report(request):
-	response = utils.generate_report()
+	entries = [i.ledger() for i in Entry.objects.all()]
+	ic(entries)
+	response = utils.generate_report(entries)
 	return response
