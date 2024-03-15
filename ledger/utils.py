@@ -7,7 +7,11 @@ def generate_report(ledger_data):
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet('rep')
+    header1 = "&CHere is some centered text."
+    footer1 = "&LHere is some left aligned text."
 
+    worksheet.set_header(header1)
+    worksheet.set_footer(footer1)
     # Define the column headers
     headers = ['Date', 'Ref', 'Description', 'Debit', 'Credit', 'Running Balance']
 
@@ -41,9 +45,10 @@ def generate_report(ledger_data):
     # # Write the summary
     # total_debit = sum(data[3] for data in ledger_data)
     # total_credit = sum(data[4] for data in ledger_data)
-    format1 = workbook.add_format()
-    format1.set_num_format('d mmmm yyyy')
+    format1 = workbook.add_format({'num_format': 'd mmmm yyyy'})
+    # format1.set_num_format('d mmmm yyyy')
     format2 = workbook.add_format({'num_format': '#,##0.00'})
+    worksheet.set_column(0, 0, 18)
 
     for row, data in enumerate(ledger_data, start=1):
         balance += float(data['debit']) - float(data['credit'])
