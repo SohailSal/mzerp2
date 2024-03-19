@@ -1,0 +1,41 @@
+{% extends "base/base.html" %}
+{% block title %} Inventory Items {% endblock %}
+{% block mainhead %} Inventory {% endblock %}
+{% block subhead %} Items {% endblock %}
+{% block content %}
+
+<div>
+  <a href="{% url 'inventory:item_add' %}" class="btn btn-outline-primary btn-sm">Add Item</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Unit</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.unit }}</td>
+        <td>
+          <div class="row row-cols-lg-auto g-3">
+            <a href="/edit/{{item.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <form action="{% url 'base:setting_delete' item.pk %}" method="post" class="">
+              {% csrf_token %}
+              <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'sales.apps.SalesConfig',
     'ledger.apps.LedgerConfig',
+    'inventory.apps.InventoryConfig',
     'base.apps.BaseConfig',
     'django.contrib.admin',
     'django.contrib.auth',
