@@ -37,16 +37,24 @@
         <input type="text" x-model="name" class="form-control form-control-sm" id="name">
       </div>
       <div class="col-md-4">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" x-model="email" class="form-control form-control-sm" id="email">
-      </div>
-      <div class="col-md-4">
-        <label for="phone" class="form-label">Phone</label>
-        <input type="text" x-model="phone" class="form-control form-control-sm" id="phone">
+        <label for="unit" class="form-label">Unit</label>
+        <input type="text" x-model="unit" class="form-control form-control-sm" id="unit">
       </div>
       <div class="col-12">
-        <label for="address" class="form-label">Address</label>
-        <input type="textarea" x-model="address" class="form-control form-control-sm" id="address">
+        <label for="description" class="form-label">Description</label>
+        <input type="textarea" x-model="description" class="form-control form-control-sm" id="description">
+      </div>
+      <div class="col-md-4">
+        <label for="purchase_rate" class="form-label">Purchase Rate</label>
+        <input type="number" x-model="purchase_rate" class="form-control form-control-sm" id="purchase_rate">
+      </div>
+      <div class="col-md-4">
+        <label for="sale_rate" class="form-label">Sale Rate</label>
+        <input type="number" x-model="sale_rate" class="form-control form-control-sm" id="sale_rate">
+      </div>
+      <div class="col-md-4">
+        <label for="quantity" class="form-label">Quantity</label>
+        <input type="number" x-model="quantity" class="form-control form-control-sm" id="quantity">
       </div>
       <div class="col-12">
         <button type="submit" class="btn btn-sm btn-primary" :disabled="formLoading" x-text="submitText"></button>
@@ -60,25 +68,29 @@
       messages: '',
       errors: '',
       name: '',
-      email: '',
-      phone: '',
-      address: '',
+      unit: '',
+      description: '',
+      purchase_rate: '',
+      sale_rate: '',
+      quantity: '',
       formLoading: false,
-      submitText: 'Insert Customer',
+      submitText: 'Insert Item',
       save: false,
 
       submit(event) {
           event.preventDefault();
           this.formLoading = true;
           this.submitText = 'Submitting...';
-          const endpointUrl = "customer_post"
+          const endpointUrl = "item_post"
           fetch(endpointUrl, {
               method: "post",
               body: JSON.stringify({
                   name: this.name,
-                  email: this.email,
-                  phone: this.phone,
-                  address: this.address,
+                  unit: this.unit,
+                  description: this.description,
+                  purchase_rate: this.purchase_rate,
+                  sale_rate: this.sale_rate,
+                  quantity: this.quantity,
               }),
               headers: {
                   'X-CSRFToken': '{{ csrf_token }}',
@@ -93,15 +105,17 @@
             if(!this.errors){
               if (!this.save) {
                 this.name = ''
-                this.email = ''
-                this.phone = ''
-                this.address = ''
+                this.unit = ''
+                this.description = ''
+                this.purchase_rate = ''
+                this.sale_rate = ''
+                this.quantity = ''
               }
             }
           })
           .finally(()=>{
               this.formLoading = false;
-              this.submitText = 'Insert Transaction';
+              this.submitText = 'Insert Item';
           });
       },
       hideMsg(){

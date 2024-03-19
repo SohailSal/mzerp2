@@ -4,13 +4,12 @@ from django.urls import reverse
 import json
 from django.db import transaction as trans
 from .models import Item
-from ledger.models import Category, Account
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError 
 from icecream import ic
 # from . import utils
 
-def index(request):
+def items(request):
 	items = Item.objects.all()
 	return render(request, 'inventory/index.html', context={'items':items})
 
@@ -20,20 +19,22 @@ def item_add(request):
 def item_post(request):
 	data = json.loads(request.body)
 	name = data['name']
-	email = data['email']
-	phone = data['phone']
-	address = data['address']
+	unit = data['unit']
+	description = data['description']
+	purchase_rate = data['purchase_rate']
+	sale_rate = data['sale_rate']
+	quantity = data['quantity']
 
 	try:
 		with trans.atomic():
-			customer = Item(name=name, email=email, phone=phone, address=address)
-			customer.full_clean()
-			customer.save()
+			item = Item(name=name, unit=unit, description=description, purchase_rate=purchase_rate, sale_rate=sale_rate, quantity=quantity)
+			item.full_clean()
+			item.save()
 	except (ValidationError, DatabaseError) as e:
 		ic(e)
 		return JsonResponse({'errors':e.message_dict}, safe=False)
 
-	return JsonResponse({'messages':{'success':'The customer saved!'}}, safe=False)
+	return JsonResponse({'messages':{'success':'The item saved!'}}, safe=False)
 
 # def invoice(request,id):
 # 	buffer = utils.generate_invoice(id)
