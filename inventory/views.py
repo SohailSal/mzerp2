@@ -10,6 +10,8 @@ from icecream import ic
 # from . import utils
 
 def items(request):
+	# request.session['current_url'] = 'inventory/index.html'
+	# request.session['app'] = 'inventory' 
 	items = Item.objects.all()
 	return render(request, 'inventory/index.html', context={'items':items})
 

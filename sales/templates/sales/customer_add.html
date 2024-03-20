@@ -16,16 +16,18 @@
          <button type="button" class="btn-close" @click="hideMsg"></button>
         </div>
       </template>
-      <template x-if="messages">
-        <div class="d-flex flex-row">
-          <ul class="alert alert-success">
-            <template x-for="(message, index) in messages">
-                <li class="mx-3"><strong><span x-text="index"></strong></span>: <span x-text="message"></span></li>
-            </template>
-          </ul>
-          <button type="button" class="btn-close" @click="hideMsg"></button>
-        </div>
-      </template>
+      <div x-show="msgShow" x-transition.duration.600ms>
+        <template x-if="messages">
+          <div class="d-flex flex-row">
+            <ul class="alert alert-success">
+              <template x-for="(message, index) in messages">
+                  <li class="mx-3"><strong><span x-text="index"></strong></span>: <span x-text="message"></span></li>
+              </template>
+            </ul>
+            <button type="button" class="btn-close" @click="hideMsg"></button>
+          </div>
+        </template>
+      </div>
       <div class="col-md-12">
         <div class="form-check form-switch">
           <input class="form-check-input" type="checkbox" id="save_fields" x-model="save">
@@ -66,6 +68,7 @@
       formLoading: false,
       submitText: 'Insert Customer',
       save: false,
+      msgShow: false,
 
       submit(event) {
           event.preventDefault();
@@ -91,6 +94,8 @@
             this.errors = data.errors
             this.messages = data.messages
             if(!this.errors){
+              this.msgShow = true
+              setTimeout(() => this.msgShow = false, 4000)
               if (!this.save) {
                 this.name = ''
                 this.email = ''
@@ -107,6 +112,7 @@
       hideMsg(){
           this.errors = ''
           this.messages = ''
+          this.msgShow = false
       }
     }
   }

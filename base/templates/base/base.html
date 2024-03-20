@@ -29,6 +29,7 @@
       }
       .sidebar li ul li a:hover{ 
         color:black;
+        background-color: aqua;
       }
       .sidebar li ul{ 
         background-color: lightgray;
@@ -85,11 +86,16 @@
                   New Transaction
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'sales:customers' %}">
+              <li class="nav-item has-submenu">
+                <a class="nav-link" href="#"> 
                   <span data-feather="users"></span>
-                  Customers
+                  Sales
+                  <span data-feather="chevron-down"></span> 
                 </a>
+                <ul class="submenu {% if not 'sales' in request.path %}collapse{% endif %}">
+                    <li><a class="nav-link {% if request.path == '/sales/customers' %}active{% endif %}" href="{% url 'sales:customers' %}" >Customers</a></li>
+                    <li><a class="nav-link {% if request.path == '/sales/customer_add' %}active{% endif %}" href="{% url 'sales:customer_add' %}">Add Customer</a></li>
+                </ul>
               </li>
               <li class="nav-item has-submenu">
                 <a class="nav-link" href="#"> 
@@ -97,9 +103,9 @@
                   Inventory 
                   <span data-feather="chevron-down"></span> 
                 </a>
-                <ul class="submenu collapse">
-                    <li><a class="nav-link" href="{% url 'inventory:items' %}">Items</a></li>
-                    <li><a class="nav-link" href="{% url 'inventory:item_add' %}">Add Item</a></li>
+                <ul class="submenu {% if not 'inventory' in request.path %}collapse{% endif %}">
+                    <li><a class="nav-link {% if request.path == '/inventory/items' %}active{% endif %}" href="{% url 'inventory:items' %}" >Items</a></li>
+                    <li><a class="nav-link {% if request.path == '/inventory/item_add' %}active{% endif %}" href="{% url 'inventory:item_add' %}">Add Item</a></li>
                 </ul>
               </li>
             </ul>
