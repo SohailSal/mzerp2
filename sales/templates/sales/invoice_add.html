@@ -50,9 +50,57 @@
         <label for="address" class="form-label">Address</label>
         <input type="textarea" x-model="address" class="form-control form-control-sm" id="address">
       </div>
+
+
       <div class="col-12">
-        <button type="submit" class="btn btn-sm btn-primary" :disabled="formLoading" x-text="submitText"></button>
-      </div>
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Account</th>
+                <th scope="col">Debit</th>
+                <th scope="col">Credit</th>
+                <th scope="col">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(entry, index) in entries" :key="index">
+              <tr>
+                <td scope="row">    <select class="form-select form-select-sm" x-model="entry.account">
+                    <option value="0" selected>Select account:</option>
+                    <template x-for="option in {{accounts}}" :key="option.id">
+                        <option :value="option.id" x-text="option.name"></option>
+                    </template>
+                </select>
+            </td>
+                <td><input x-model="entry.debit" type="number" class="form-control form-control-sm" @change="debitChange(index)"></td>
+                <td><input x-model="entry.credit" type="number" class="form-control form-control-sm" @change="creditChange(index)"></td>
+                <td><template x-if="index>1"><button type="button" class="btn btn-sm btn-danger" @click="removeEntry(index)">&times;</button></template></td>
+              </tr>
+              </template>
+            </tbody>
+            <tfoot>
+                 <tr>
+                  <td>
+                    <label for="difference" class="form-label">Difference:</label>
+                    <input type="number" x-model="difference" readonly class="form-control form-control-sm"/>
+                  </td>
+                  <td>
+                    <label for="tdebit" class="form-label">Total Debit:</label>
+                    <input type="number" x-model="tdebit" readonly class="form-control form-control-sm"/>
+                  </td>
+                  <td>
+                    <label for="tcredit" class="form-label">Total Credit:</label>
+                    <input type="number" x-model="tcredit" readonly class="form-control form-control-sm"/>
+                  </td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td colspan="4"><button type="submit" class="btn btn-sm btn-primary" :disabled="formLoading" x-text="submitText"></button><button type="button" class="btn btn-sm btn-secondary mx-4" @click="addEntry()">Add Entry Row</button></td>
+                </tr>
+            </tfoot>
+        </table>
+     </div>
+
     </form>
   </div>
 
@@ -69,6 +117,28 @@
       submitText: 'Insert Invoice',
       save: false,
       msgShow: false,
+      entries: [{
+            account: '',
+            debit: '',
+            credit: '',
+            },
+            {
+            account: '',
+            debit: '',
+            credit: '',
+        }],
+
+      addEntry() {
+        this.entries.push({
+          account: '',
+          debit: '',
+          credit: '',
+        });
+      },
+      removeEntry(index) {
+          this.entries.splice(index, 1);
+          this.total();
+      },
 
       submit(event) {
           event.preventDefault();
@@ -78,6 +148,7 @@
           fetch(endpointUrl, {
               method: "post",
               body: JSON.stringify({
+                  entries: this.entries,
                   invoice_number: this.invoice_number,
                   invoice_date: this.invoice_date,
                   phone: this.phone,

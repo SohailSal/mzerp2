@@ -10,3 +10,9 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def select(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }

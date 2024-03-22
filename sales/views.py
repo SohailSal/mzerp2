@@ -5,6 +5,7 @@ import json
 from django.db import transaction as trans
 from .models import Customer, Invoice
 from ledger.models import Category, Account
+from inventory.models import Item
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError 
 from icecream import ic
@@ -44,7 +45,8 @@ def invoices(request):
 	return render(request, 'sales/invoices.html', context={"invoices": invoices})
 
 def invoice_add(request):
-	return render(request, 'sales/invoice_add.html', context={})
+	items = [i.select() for i in Item.objects.all()]
+	return render(request, 'sales/invoice_add.html', context={'items':items})
 
 def invoice_post(request):
 	data = json.loads(request.body)
