@@ -14,7 +14,7 @@ from . import utils
 
 def transactions(request):
 	transactions = Transaction.objects.order_by('id')
-	return render(request, 'ledger/index.html', context={"transactions": transactions})
+	return render(request, 'ledger/transactions.html', context={"transactions": transactions})
 
 def transaction_add(request):
 	accounts = [i.select() for i in Account.objects.all()]

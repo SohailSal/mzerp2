@@ -13,7 +13,7 @@ def items(request):
 	# request.session['current_url'] = 'inventory/index.html'
 	# request.session['app'] = 'inventory' 
 	items = Item.objects.all()
-	return render(request, 'inventory/index.html', context={'items':items})
+	return render(request, 'inventory/items.html', context={'items':items})
 
 def item_add(request):
 	return render(request, 'inventory/item_add.html', context={})

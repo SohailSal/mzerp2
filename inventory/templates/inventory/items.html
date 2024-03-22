@@ -24,7 +24,7 @@
         <td>{{ item.name }}</td>
         <td>{{ item.unit }}</td>
         <td>
-          <div class="row row-cols-lg-auto g-3">
+          <div class="row row-cols-sm-auto">
             <a href="/edit/{{item.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
             <form action="{% url 'base:setting_delete' item.pk %}" method="post" class="">
               {% csrf_token %}

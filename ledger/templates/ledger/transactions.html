@@ -23,7 +23,7 @@
                     <td>{{ transaction.ref }}</td>
                     <td>{{ transaction.date }}</td>
                     <td>
-                      <div class="row row-cols-lg-auto g-3">
+                      <div class="row row-cols-lg-auto">
                         <form action="{% url 'ledger:transaction_delete' transaction.pk %}" method="post" class="">
                           {% csrf_token %}
                           <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>

@@ -80,21 +80,28 @@
           <div class="sidebar-sticky">
 
             <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'ledger:transaction_add' %}">
-                  <span data-feather="file"></span>
-                  New Transaction
+              <li class="nav-item has-submenu">
+                <a class="nav-link" href="#"> 
+                  <span data-feather="book-open"></span>
+                  Ledger
+                  <span data-feather="chevron-down"></span> 
                 </a>
+                <ul class="submenu {% if not 'ledger' in request.path %}collapse{% endif %}">
+                    <li><a class="nav-link {% if request.path == '/ledger/transactions' %}active{% endif %}" href="{% url 'ledger:transactions' %}" >Transactions</a></li>
+                    <li><a class="nav-link {% if request.path == '/ledger/transaction_add' %}active{% endif %}" href="{% url 'ledger:transaction_add' %}">Add Transaction</a></li>
+                </ul>
               </li>
               <li class="nav-item has-submenu">
                 <a class="nav-link" href="#"> 
-                  <span data-feather="users"></span>
+                  <span data-feather="briefcase"></span>
                   Sales
                   <span data-feather="chevron-down"></span> 
                 </a>
                 <ul class="submenu {% if not 'sales' in request.path %}collapse{% endif %}">
                     <li><a class="nav-link {% if request.path == '/sales/customers' %}active{% endif %}" href="{% url 'sales:customers' %}" >Customers</a></li>
                     <li><a class="nav-link {% if request.path == '/sales/customer_add' %}active{% endif %}" href="{% url 'sales:customer_add' %}">Add Customer</a></li>
+                    <li><a class="nav-link {% if request.path == '/sales/invoices' %}active{% endif %}" href="{% url 'sales:invoices' %}" >Invoices</a></li>
+                    <li><a class="nav-link {% if request.path == '/sales/invoice_add' %}active{% endif %}" href="{% url 'sales:invoice_add' %}">Add Invoice</a></li>
                 </ul>
               </li>
               <li class="nav-item has-submenu">
@@ -115,7 +122,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h4 class="h4">{% block subhead %}{% endblock %}</h4>
+            <h5 class="h5">{% block subhead %}{% endblock %}</h5>
           </div>
 
           {% block content %}
