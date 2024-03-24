@@ -1,6 +1,7 @@
 import xlsxwriter
 import io
 from django.http import HttpResponse
+from .models import Category
 
 def generate_report(ledger_data):
     # Create a new workbook and add a worksheet
@@ -83,3 +84,10 @@ def generate_report(ledger_data):
     )
     response["Content-Disposition"] = "attachment; filename=%s" % filename
     return response
+
+def tree():
+    all = [i.select() for i in Category.objects.all()]
+    level0 = [i.select() for i in Category.objects.filter(level=0)]
+    level1 = [i.select() for i in Category.objects.filter(level=1)]
+    level2 = [i.select() for i in Category.objects.filter(level=2)]
+    return level2

@@ -12,6 +12,12 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
+    def select(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+
 class Invoice(models.Model):
     transaction = models.OneToOneField(Transaction, null=True, blank=True, on_delete=models.CASCADE)
     invoice_number = models.CharField(max_length=255)

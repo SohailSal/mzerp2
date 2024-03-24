@@ -15,16 +15,24 @@
             <button @click="hideMsg" class="alert alert-secondary">X</button>
             </div>
         </template>
-        <template x-if="messages">
-            <div class="alert alert-success">
-            <template x-for="(message, index) in messages">
-                <p>
-                <strong><span x-text="index"></strong></span>: <span x-text="message"></span>
-                </p>
-            </template>
-            <button @click="hideMsg" class="alert alert-secondary">X</button>
+        <div x-show="msgShow" x-transition.duration.600ms>
+          <template x-if="messages">
+            <div class="d-flex flex-row">
+              <ul class="alert alert-success">
+                <template x-for="(message, index) in messages">
+                    <li class="mx-3"><strong><span x-text="index"></strong></span>: <span x-text="message"></span></li>
+                </template>
+              </ul>
+              <button type="button" class="btn-close" @click="hideMsg"></button>
             </div>
-        </template>
+          </template>
+        </div>
+        <div class="col-md-12">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="save_fields" x-model="save">
+            <label class="form-check-label" for="save_fields">Retain the fields data after save</label>
+          </div>
+        </div>
         <div class="col-md-4">
           <label for="ref" class="form-label">Ref</label>
           <input type="text" x-model="ref" class="form-control form-control-sm" id="ref">
@@ -50,13 +58,14 @@
                 <tbody>
                   <template x-for="(entry, index) in entries" :key="index">
                   <tr>
-                    <td scope="row">    <select class="form-select form-select-sm" x-model="entry.account">
+                    <td scope="row">
+                      <select class="form-select form-select-sm" x-model="entry.account">
                         <option value="0" selected>Select account:</option>
                         <template x-for="option in {{accounts}}" :key="option.id">
                             <option :value="option.id" x-text="option.name"></option>
                         </template>
-                    </select>
-                </td>
+                      </select>
+                    </td>
                     <td><input x-model="entry.debit" type="number" class="form-control form-control-sm" @change="debitChange(index)"></td>
                     <td><input x-model="entry.credit" type="number" class="form-control form-control-sm" @change="creditChange(index)"></td>
                     <td><template x-if="index>1"><button type="button" class="btn btn-sm btn-danger" @click="removeEntry(index)">&times;</button></template></td>
@@ -107,11 +116,13 @@
             debit: '',
             credit: '',
         }],
-        tdebit: 0,
-        tcredit: 0,
-        difference: 0,
+        tdebit: null,
+        tcredit: null,
+        difference: null,
         formLoading: false,
         submitText: 'Insert Transaction',
+        save: false,
+        msgShow: false,
 
         addEntry() {
           this.entries.push({
@@ -149,6 +160,10 @@
         },
         submit(event) {
             event.preventDefault();
+            if(this.difference){
+              alert('Transaction not balanced! Can\'t execute.')
+              return false;
+            }
             this.formLoading = true;
             this.submitText = 'Submitting...';
             const endpointUrl = "transaction_post"
@@ -170,6 +185,28 @@
             .then(data => {
                 this.errors = data.errors
                 this.messages = data.messages
+                if(!this.errors){
+                  this.msgShow = true
+                  setTimeout(() => this.msgShow = false, 4000)
+                  if (!this.save) {
+                    this.ref = ''
+                    this.date = ''
+                    this.description = ''
+                    this.entries = [{
+                        account: '',
+                        debit: '',
+                        credit: '',
+                        },
+                        {
+                        account: '',
+                        debit: '',
+                        credit: '',
+                    }],
+                    this.tdebit = null
+                    this.tcredit = null
+                    this.difference = null
+                  }
+               }
             })
             .finally(()=>{
                 this.formLoading = false;
@@ -179,6 +216,7 @@
         hideMsg(){
             this.errors = ''
             this.messages = ''
+            this.msgShow = false
         }
       }
     }

@@ -1,0 +1,137 @@
+{% extends "base/base.html" %}
+{% block title %} Add Category {% endblock %}
+{% block mainhead %} Ledger {% endblock %}
+{% block subhead %} Add Category {% endblock %}
+{% block content %}
+
+<div x-data="handler()" x-cloak>
+  <form class="row g-3" id="customerForm" @submit.prevent="submit">
+      <template x-if="errors">
+        <div class="d-flex flex-row">
+          <ul class="alert alert-danger">
+            <template x-for="(error, index) in errors">
+                <li class="mx-3"><strong><span x-text="index"></strong></span>: <span x-text="error"></span></li>
+            </template>
+         </ul>
+         <button type="button" class="btn-close" @click="hideMsg"></button>
+        </div>
+      </template>
+      <div x-show="msgShow" x-transition.duration.600ms>
+        <template x-if="messages">
+          <div class="d-flex flex-row">
+            <ul class="alert alert-success">
+              <template x-for="(message, index) in messages">
+                  <li class="mx-3"><strong><span x-text="index"></strong></span>: <span x-text="message"></span></li>
+              </template>
+            </ul>
+            <button type="button" class="btn-close" @click="hideMsg"></button>
+          </div>
+        </template>
+      </div>
+      <div class="col-md-12">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="save_fields" x-model="save">
+          <label class="form-check-label" for="save_fields">Retain the fields data after save</label>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <label for="parent_category" class="form-label">Primary Level</label>
+        <select class="form-select form-select-sm" x-model="parent_category">
+          <option value="0" selected>Select category:</option>
+          <template x-for="option in {{categories}}" :key="option.id">
+              <option :value="option.id" x-text="option.name"></option>
+          </template>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="parent_category" class="form-label">Level 1</label>
+        <input type="text" x-model="parent_category" class="form-control form-control-sm" id="parent_category">
+      </div>
+      <div class="col-md-3">
+        <label for="parent_category" class="form-label">Level 2</label>
+        <input type="text" x-model="parent_category" class="form-control form-control-sm" id="parent_category">
+      </div>
+      <div class="col-md-2">
+        <label for="parent_category" class="form-label">Level 3</label>
+        <input type="text" x-model="parent_category" class="form-control form-control-sm" id="parent_category">
+      </div>
+      <div class="col-md-2">
+        <label for="parent_category" class="form-label">Level 4</label>
+        <input type="text" x-model="parent_category" class="form-control form-control-sm" id="parent_category">
+      </div>
+      <div class="col-md-4">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" x-model="name" class="form-control form-control-sm" id="name">
+      </div>
+      <div class="col-8">
+        <label for="description" class="form-label">Description</label>
+        <input type="textarea" x-model="description" class="form-control form-control-sm" id="description">
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-sm btn-primary" :disabled="formLoading" x-text="submitText"></button>
+      </div>
+    </form>
+  </div>
+
+<script>
+  function handler() {
+  return {
+      messages: '',
+      errors: '',
+      name: '',
+      parent_category: '',
+      description: '',
+      formLoading: false,
+      submitText: 'Insert Category',
+      save: false,
+      msgShow: false,
+
+      submit(event) {
+          event.preventDefault();
+          this.formLoading = true;
+          this.submitText = 'Submitting...';
+          const endpointUrl = "category_post"
+          fetch(endpointUrl, {
+              method: "post",
+              body: JSON.stringify({
+                  name: this.name,
+                  parent_category: this.parent_category,
+                  description: this.description,
+              }),
+              headers: {
+                  'X-CSRFToken': '{{ csrf_token }}',
+              },
+          })
+          .then(response => {
+              return response.json();
+          })
+          .then(data => {
+            this.errors = data.errors
+            this.messages = data.messages
+            if(!this.errors){
+              this.msgShow = true
+              setTimeout(() => this.msgShow = false, 4000)
+              if (!this.save) {
+                this.name = ''
+                this.parent_category = ''
+                this.description = ''
+              }
+            }
+          })
+          .finally(()=>{
+              this.formLoading = false;
+              this.submitText = 'Insert Category';
+          });
+      },
+      hideMsg(){
+          this.errors = ''
+          this.messages = ''
+          this.msgShow = false
+      }
+    }
+  }
+</script>
+<style>
+  [x-cloak] {display: none !important;  }
+</style>
+{% endblock %}

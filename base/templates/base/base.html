@@ -87,8 +87,10 @@
                   <span data-feather="chevron-down"></span> 
                 </a>
                 <ul class="submenu {% if not 'ledger' in request.path %}collapse{% endif %}">
-                    <li><a class="nav-link {% if request.path == '/ledger/transactions' %}active{% endif %}" href="{% url 'ledger:transactions' %}" >Transactions</a></li>
-                    <li><a class="nav-link {% if request.path == '/ledger/transaction_add' %}active{% endif %}" href="{% url 'ledger:transaction_add' %}">Add Transaction</a></li>
+                  <li><a class="nav-link {% if request.path == '/ledger/categories' %}active{% endif %}" href="{% url 'ledger:categories' %}" >Categories</a></li>
+                  <li><a class="nav-link {% if request.path == '/ledger/category_add' %}active{% endif %}" href="{% url 'ledger:category_add' %}">Add Category</a></li>
+                  <li><a class="nav-link {% if request.path == '/ledger/transactions' %}active{% endif %}" href="{% url 'ledger:transactions' %}" >Transactions</a></li>
+                  <li><a class="nav-link {% if request.path == '/ledger/transaction_add' %}active{% endif %}" href="{% url 'ledger:transaction_add' %}">Add Transaction</a></li>
                 </ul>
               </li>
               <li class="nav-item has-submenu">

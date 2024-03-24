@@ -1,0 +1,41 @@
+{% extends "base/base.html" %}
+{% block title %} Categories {% endblock %}
+{% block mainhead %} Ledger {% endblock %}
+{% block subhead %} Categories {% endblock %}
+{% block content %}
+
+<div>
+  <a href="{% url 'ledger:category_add' %}" class="btn btn-outline-primary btn-sm">Add Category</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Parent</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for category in categories %}
+      <tr>
+        <td>{{ category.id }}</td>
+        <td>{{ category.name }}</td>
+        <td>{{ category.parent }}</td>
+        <td>
+          <div class="row row-cols-lg-auto">
+            <a href="/edit/{{category.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <form action="{% url 'base:setting_delete' category.pk %}" method="post" class="">
+              {% csrf_token %}
+              <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
