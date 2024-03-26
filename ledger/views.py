@@ -95,6 +95,11 @@ def category_post(request):
 
 	return JsonResponse({'messages':{'success':'The document saved!'}}, safe=False)
 
+def category_delete(request,id):
+	category = get_object_or_404(Category, pk=id)
+	category.delete()
+	messages.success(request, 'The category has been deleted successfully.')
+	return HttpResponseRedirect(reverse('ledger:categories'))
 
 
 # def sample_post(request):

@@ -86,8 +86,13 @@ def generate_report(ledger_data):
     return response
 
 def tree():
-    all = [i.select() for i in Category.objects.all()]
+#    all = [i.select() for i in Category.objects.all()]
+    all = Category.objects.all()
+    sorted = []
+    levels = ['','├','├-','├--','├---']
+    for node in all:
+        sorted.append({'id':node.id,'name':levels[node.level]+node.name})
     level0 = [i.select() for i in Category.objects.filter(level=0)]
     level1 = [i.select() for i in Category.objects.filter(level=1)]
     level2 = [i.select() for i in Category.objects.filter(level=2)]
-    return level2
+    return sorted
