@@ -64,7 +64,8 @@ def categories(request):
 
 def category_add(request):
 	categories = utils.tree()
-	ic(categories)
+	cat = utils.tree2()
+	ic(cat)
 	return render(request, 'ledger/category_add.html', context={"categories": categories})
 
 def category_post(request):

@@ -90,9 +90,40 @@ def tree():
     all = Category.objects.all()
     sorted = []
     levels = ['','├','├-','├--','├---']
-    for node in all:
-        sorted.append({'id':node.id,'name':levels[node.level]+node.name})
+    for node0 in all:
+        if node0.level == 0:
+            current0 = node0
+            sorted.append({'id':node0.id,'name':levels[node0.level]+node0.name})
+            for node1 in all:
+                if node1.level == 1 and node1.parent_category == current0:
+                    current1 = node1
+                    sorted.append({'id':node1.id,'name':levels[node1.level]+node1.name})
+                    for node2 in all:
+                        if node2.level == 2 and node2.parent_category == current1:
+                            current2 = node2
+                            sorted.append({'id':node2.id,'name':levels[node2.level]+node2.name})
+
+
     level0 = [i.select() for i in Category.objects.filter(level=0)]
     level1 = [i.select() for i in Category.objects.filter(level=1)]
     level2 = [i.select() for i in Category.objects.filter(level=2)]
     return sorted
+
+# poe.com generated code
+
+def build_tree(nodes, level=0):
+    tree = []
+    levels = ['','├','├-','├--','├---']
+    for node in nodes:
+        if node.level == level:
+            current_node = {'id': node.id, 'name': levels[node.level] + node.name}
+            children = build_tree(nodes, level + 1)
+            if children:
+                current_node['children'] = children
+            tree.append(current_node)
+    return tree
+
+def tree2():
+    nodes = Category.objects.all()
+    tree = build_tree(nodes)
+    return tree
