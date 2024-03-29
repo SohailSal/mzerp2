@@ -1,5 +1,5 @@
 import random
-from ledger.models import Category, Account
+from ledger.models import Category, Account, Document
 from .models import Invoice
 from icecream import ic
 from django.http import JsonResponse, HttpResponse, FileResponse
@@ -14,6 +14,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
 from reportlab.lib import colors
 from num2words import num2words
+from datetime import date
 
 def generate_random_number():
     account_number = ""
@@ -29,24 +30,44 @@ def generate_random_number():
     
     return account_number
 
+def generate_invoice_number(request):
+    chucks = []
+    document = get_object_or_404(Document, pk=2)
+    today = date.today()
+    prefix = document.prefix
+    year = today.strftime("% Y")
+    month = today.strftime("%m")
+    counter = 1
+    chucks.append(counter.zfill(3))
+  #  chucks.reverse()
+    chucks.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
+    # ic(category.account_set.all())
+    str1 = ""
+    for ele in chucks:
+        str1 += ele
+ 
+    ic(chucks)
+    ic(str1)
+    return JsonResponse({'message':'fine'})
+
 def generate_account_number(request):
-    account_array = []
+    chunks = []
     category = Category.objects.filter(name__iexact='debtors').first()
     parent_cat = category.parent_category
     current_cat = category
     for i in range(category.level):
-        account_array.append(current_cat.category_number.zfill(2))
+        chunks.append(current_cat.category_number.zfill(2))
         current_cat = parent_cat
         parent_cat = current_cat.parent_category
-    account_array.append(current_cat.category_number)
-    account_array.reverse()
-    account_array.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
+    chunks.append(current_cat.category_number)
+    chunks.reverse()
+    chunks.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
     # ic(category.account_set.all())
     str1 = ""
-    for ele in account_array:
+    for ele in chunks:
         str1 += ele
  
-    ic(account_array)
+    ic(chunks)
     ic(str1)
     return JsonResponse({'message':'fine'})
 
