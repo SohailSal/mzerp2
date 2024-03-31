@@ -52,9 +52,10 @@ def invoice_add(request):
 
 def invoice_post(request):
 	data = json.loads(request.body)
-	invoice_number = data['invoice_number']
+	# invoice_number = data['invoice_number']
+	invoice_date = data['invoice_date'] if data['invoice_date'] else None
+	invoice_number = utils.generate_invoice_number(invoice_date) if data['invoice_date'] else None
 	customer = None if (data['customer'] == '') else get_object_or_404(Customer, pk=data['customer'])
-	invoice_date = data['invoice_date']
 	description = data['description']
 	document = get_object_or_404(Document, pk=2)
 	items = []
@@ -73,11 +74,11 @@ def invoice_post(request):
 			invoice.full_clean()
 			invoice.save()
 			for entry in data['entries']:
-				item = get_object_or_404(Item, pk=entry['item'])
-				quantity = float(entry['quantity'])
-				rate = float(entry['rate'])
-				amount = float(entry['amount'])
-				total = total + amount
+				item = get_object_or_404(Item, pk=entry['item']) if entry['item'] else None
+				quantity = float(entry['quantity']) if entry['quantity'] else None
+				rate = float(entry['rate']) if entry['rate'] else None
+				amount = float(entry['amount']) if entry['amount'] else None
+				total = (total + amount) if amount else None
 				items.append(InvoiceItem(invoice=invoice, item=item, quantity=quantity, rate=rate, amount=amount))
 			for item in items:
 				item.full_clean()

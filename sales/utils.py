@@ -14,7 +14,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle, SimpleDocTemplate, Spacer
 from reportlab.lib import colors
 from num2words import num2words
-from datetime import date
+from datetime import datetime
 
 def generate_random_number():
     account_number = ""
@@ -30,46 +30,26 @@ def generate_random_number():
     
     return account_number
 
-def generate_invoice_number(request):
-    chucks = []
-    document = get_object_or_404(Document, pk=2)
-    today = date.today()
-    prefix = document.prefix
-    year = today.strftime("% Y")
-    month = today.strftime("%m")
-    counter = 1
-    chucks.append(counter.zfill(3))
-  #  chucks.reverse()
-    chucks.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
-    # ic(category.account_set.all())
-    str1 = ""
-    for ele in chucks:
-        str1 += ele
- 
-    ic(chucks)
-    ic(str1)
-    return JsonResponse({'message':'fine'})
-
-def generate_account_number(request):
+def generate_invoice_number(d):
     chunks = []
-    category = Category.objects.filter(name__iexact='debtors').first()
-    parent_cat = category.parent_category
-    current_cat = category
-    for i in range(category.level):
-        chunks.append(current_cat.category_number.zfill(2))
-        current_cat = parent_cat
-        parent_cat = current_cat.parent_category
-    chunks.append(current_cat.category_number)
-    chunks.reverse()
-    chunks.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
-    # ic(category.account_set.all())
+    document = get_object_or_404(Document, pk=2)
+    # d = date.today()
+    prefix = document.prefix
+    dt = datetime.strptime(d,'%Y-%m-%d')
+    year = dt.strftime("%Y")
+    month = dt.strftime("%m")
+    # counter = '1' if Invoice.objects.count() == 0 else str(int(Invoice.objects.last().invoice_number[-3:])+1)
+    counter = '1' if Invoice.objects.count() == 0 else str(int(Invoice.objects.last().invoice_number.split('/')[-1])+1)
+    chunks.append(prefix+'/')
+    chunks.append(year+'/')
+    chunks.append(month+'/')
+    # chunks.append(counter.zfill(3))
+    chunks.append(counter)
     str1 = ""
     for ele in chunks:
         str1 += ele
  
-    ic(chunks)
-    ic(str1)
-    return JsonResponse({'message':'fine'})
+    return str1
 
 def generate_invoice(id):
     invoice = get_object_or_404(Invoice, pk=id)

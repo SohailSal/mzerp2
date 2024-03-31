@@ -2,6 +2,7 @@ import xlsxwriter
 import io
 from django.http import HttpResponse
 from .models import Category
+from icecream import ic
 
 def generate_report(ledger_data):
     # Create a new workbook and add a worksheet
@@ -89,7 +90,8 @@ def tree():
 #    all = [i.select() for i in Category.objects.all()]
     all = Category.objects.all()
     sorted = []
-    levels = ['','├','├-','├--','├---']
+    # levels = ['','├','├-','├--','├---']
+    levels = ['','- ','- - ','- - - ','- - - - ']
     for node0 in all:
         if node0.level == 0:
             current0 = node0
@@ -102,6 +104,14 @@ def tree():
                         if node2.level == 2 and node2.parent_category == current1:
                             current2 = node2
                             sorted.append({'id':node2.id,'name':levels[node2.level]+node2.name})
+                            for node3 in all:
+                                if node3.level == 3 and node3.parent_category == current2:
+                                    current3 = node3
+                                    sorted.append({'id':node3.id,'name':levels[node3.level]+node3.name})
+                                    for node4 in all:
+                                        if node4.level == 4 and node4.parent_category == current3:
+                                            current4 = node4
+                                            sorted.append({'id':node4.id,'name':levels[node4.level]+node4.name})
 
 
     level0 = [i.select() for i in Category.objects.filter(level=0)]
@@ -111,19 +121,41 @@ def tree():
 
 # poe.com generated code
 
-def build_tree(nodes, level=0):
+def build_tree(nodes, level=0, current=None):
     tree = []
-    levels = ['','├','├-','├--','├---']
+    # levels = ['','├','├-','├--','├---']
+    levels = ['','- ','- - ','- - - ','- - - - ']
     for node in nodes:
-        if node.level == level:
-            current_node = {'id': node.id, 'name': levels[node.level] + node.name}
-            children = build_tree(nodes, level + 1)
-            if children:
-                current_node['children'] = children
-            tree.append(current_node)
+        if level < 4:
+            current = node
+            tree.append({'id': node.id, 'name': levels[node.level] + node.name})
+            level = level + 1
+            build_tree(nodes, level, current)
+
     return tree
 
 def tree2():
     nodes = Category.objects.all()
     tree = build_tree(nodes)
     return tree
+
+def generate_account_number():
+    chunks = []
+    category = Category.objects.filter(name__iexact='debtors').first()
+    parent_cat = category.parent_category
+    current_cat = category
+    for i in range(category.level):
+        chunks.append(current_cat.category_number.zfill(2))
+        current_cat = parent_cat
+        parent_cat = current_cat.parent_category
+    chunks.append(current_cat.category_number)
+    chunks.reverse()
+    chunks.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
+    # ic(category.account_set.all())
+    str1 = ""
+    for ele in chunks:
+        str1 += ele
+ 
+    ic(chunks)
+    ic(str1)
+    return str1

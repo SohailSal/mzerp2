@@ -33,10 +33,10 @@ class Invoice(models.Model):
 
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, null=True, blank=True, on_delete=models.CASCADE)
-    quantity = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
-    rate = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
-    amount = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.DecimalField(max_digits=14, decimal_places=2)
+    rate = models.DecimalField(max_digits=14, decimal_places=2)
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
 
     def __str__(self):
         return self.invoice.invoice_number

@@ -2,7 +2,6 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
     category_number = models.CharField(max_length=20, null=True, blank=True)
     level = models.PositiveSmallIntegerField()
     parent_category = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
@@ -31,6 +30,8 @@ class Account(models.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'account_number': self.account_number,
+            'category': self.category.name,
         }
 
 class Document(models.Model):

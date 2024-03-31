@@ -1,11 +1,11 @@
 {% extends "base/base.html" %}
-{% block title %} Add Category {% endblock %}
+{% block title %} Add Account {% endblock %}
 {% block mainhead %} Ledger {% endblock %}
-{% block subhead %} Add Category {% endblock %}
+{% block subhead %} Add Account {% endblock %}
 {% block content %}
 
 <div x-data="handler()" x-cloak>
-  <form class="row g-3" id="customerForm" @submit.prevent="submit">
+  <form class="row g-3" id="accountForm" @submit.prevent="submit">
       <template x-if="errors">
         <div class="d-flex flex-row">
           <ul class="alert alert-danger">
@@ -34,9 +34,9 @@
           <label class="form-check-label" for="save_fields">Retain the fields data after save</label>
         </div>
       </div>
-      <div class="col-md-2">
-        <label for="parent_category" class="form-label">Parent Category</label>
-        <select class="form-select form-select-sm" x-model="parent_category">
+      <div class="col-md-4">
+        <label for="category" class="form-label">Category</label>
+        <select class="form-select form-select-sm" x-model="category">
           <option value="0" selected>Select category:</option>
           <template x-for="option in {{categories}}" :key="option.id">
               <option :value="option.id" x-text="option.name"></option>
@@ -46,6 +46,10 @@
       <div class="col-md-4">
         <label for="name" class="form-label">Name</label>
         <input type="text" x-model="name" class="form-control form-control-sm" id="name">
+      </div>
+      <div class="col-md-4">
+        <label for="balance" class="form-label">Balance</label>
+        <input type="number" x-model="balance" class="form-control form-control-sm" id="balance">
       </div>
       <div class="col-12">
         <button type="submit" class="btn btn-sm btn-primary" :disabled="formLoading" x-text="submitText"></button>
@@ -59,9 +63,10 @@
       messages: '',
       errors: '',
       name: '',
-      parent_category: '',
+      category: '',
+      balance: '',
       formLoading: false,
-      submitText: 'Insert Category',
+      submitText: 'Insert Account',
       save: false,
       msgShow: false,
 
@@ -69,12 +74,13 @@
           event.preventDefault();
           this.formLoading = true;
           this.submitText = 'Submitting...';
-          const endpointUrl = "category_post"
+          const endpointUrl = "account_post"
           fetch(endpointUrl, {
               method: "post",
               body: JSON.stringify({
                   name: this.name,
-                  parent_category: this.parent_category,
+                  category: this.category,
+                  balance: this.balance,
               }),
               headers: {
                   'X-CSRFToken': '{{ csrf_token }}',
@@ -88,17 +94,17 @@
             this.messages = data.messages
             if(!this.errors){
               this.msgShow = true
-              setTimeout(() => this.msgShow = false, 1000)
+              setTimeout(() => this.msgShow = false, 4000)
               if (!this.save) {
                 this.name = ''
-                this.parent_category = ''
+                this.category = ''
+                this.balance = ''
               }
             }
           })
           .finally(()=>{
               this.formLoading = false;
-              this.submitText = 'Insert Category';
-              setTimeout(() => location.reload() = false, 2000)
+              this.submitText = 'Insert Account';
           });
       },
       hideMsg(){

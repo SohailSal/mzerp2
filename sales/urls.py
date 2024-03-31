@@ -11,7 +11,7 @@ urlpatterns = [
 	path('invoice_add',views.invoice_add,name='invoice_add'),
     path('invoice_post', views.invoice_post, name='invoice_post'),
     path('getRate', views.getRate, name='getRate'),
-    path('generate', utils.generate_account_number, name='generate'),
+    path('generate2', utils.generate_invoice_number, name='generate2'),
     # path('invoice', utils.invoice, name='invoice'),
     path('invoice/<int:id>', views.invoice, name='invoice'),
 ]
