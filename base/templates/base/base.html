@@ -29,7 +29,7 @@
       }
       .sidebar li ul li a:hover{ 
         color:black;
-        background-color: aqua;
+        background-color: #f8f9fa;
       }
       .sidebar li ul{ 
         background-color: lightgray;
@@ -80,6 +80,12 @@
           <div class="sidebar-sticky">
 
             <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'base:dashboard' %}"> 
+                  <span data-feather="trello"></span>
+                  Desktop
+                </a>
+              </li>
               <li class="nav-item has-submenu">
                 <a class="nav-link" href="#"> 
                   <span data-feather="book-open"></span>
@@ -118,6 +124,12 @@
                     <li><a class="nav-link {% if request.path == '/inventory/items' %}active{% endif %}" href="{% url 'inventory:items' %}" >Items</a></li>
                     <li><a class="nav-link {% if request.path == '/inventory/item_add' %}active{% endif %}" href="{% url 'inventory:item_add' %}">Add Item</a></li>
                 </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'base:blank' %}"> 
+                  <span data-feather="sliders"></span>
+                  Settings
+                </a>
               </li>
             </ul>
 
