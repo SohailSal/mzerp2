@@ -1,0 +1,18 @@
+[
+    {
+      "model": "base.setting",
+      "pk": 1,
+      "fields": {
+        "name": "cab1",
+        "value": 1
+      }
+    },
+    {
+      "model": "base.setting",
+      "pk": 2,
+      "fields": {
+        "name": "cs",
+        "value": 2
+      }
+    }
+]
