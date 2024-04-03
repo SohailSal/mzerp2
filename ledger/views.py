@@ -73,10 +73,11 @@ def category_post(request):
 	name = data['name'] if data['name'] else None
 	parent_category = get_object_or_404(Category, pk=data['parent_category']) if data['parent_category'] else None 
 	level = parent_category.level + 1
+	category_number = 1 if parent_category == None or parent_category.category_set.count() == 0 else int(parent_category.category_set.order_by('category_number').last().category_number)+1
 
 	try:
 		with trans.atomic():
-			category = Category(name=name, level=level, parent_category=parent_category)
+			category = Category(name=name, level=level, parent_category=parent_category, category_number=category_number)
 			category.full_clean()
 			category.save()
 	except (ValidationError, DatabaseError) as e:

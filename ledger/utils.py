@@ -150,7 +150,9 @@ def generate_account_number(category):
         parent_cat = current_cat.parent_category
     chunks.append(current_cat.category_number)
     chunks.reverse()
-    chunks.append(str(int(category.account_set.order_by('account_number').last().account_number[-3:])+1))
+    counter = '1' if category.account_set.count() == 0 else str(int(category.account_set.order_by('account_number').last().account_number[-3:])+1)
+    chunks.append(counter.zfill(3))
+    # chunks.append(str(int(category.account_set.order_by('account_number').last().account_number[-3:])+1))
     # ic(category.account_set.all())
     str1 = ""
     for ele in chunks:
