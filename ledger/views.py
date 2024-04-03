@@ -109,7 +109,7 @@ def account_post(request):
 	name = data['name'] if data['name'] else None
 	category = get_object_or_404(Category, pk=data['category']) if data['category'] else None 
 	balance = data['balance'] if data['balance'] else None
-	account_number = utils.generate_account_number()
+	account_number = utils.generate_account_number(category)
 
 	try:
 		with trans.atomic():

@@ -139,9 +139,9 @@ def tree2():
     tree = build_tree(nodes)
     return tree
 
-def generate_account_number():
+def generate_account_number(category):
     chunks = []
-    category = Category.objects.filter(name__iexact='debtors').first()
+    # category = Category.objects.filter(name__iexact='debtors').first()
     parent_cat = category.parent_category
     current_cat = category
     for i in range(category.level):
@@ -150,7 +150,7 @@ def generate_account_number():
         parent_cat = current_cat.parent_category
     chunks.append(current_cat.category_number)
     chunks.reverse()
-    chunks.append(str(int(category.account_set.order_by('account_number').last().account_number)+1))
+    chunks.append(str(int(category.account_set.order_by('account_number').last().account_number[-3:])+1))
     # ic(category.account_set.all())
     str1 = ""
     for ele in chunks:

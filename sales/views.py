@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.db import DatabaseError 
 from icecream import ic
 from . import utils
+from ledger import utils as ledger_utils
 
 def customers(request):
 	customers = Customer.objects.order_by('id')
@@ -28,8 +29,9 @@ def customer_post(request):
 
 	try:
 		with trans.atomic():
-			category = Category.objects.filter(name__iexact='debtors').first()
-			account = Account(name=name,account_number=utils.generate_random_number(),category=category)
+			customers = Setting.objects.filter(name__iexact='customers').first().value
+			category = get_object_or_404(Category, pk=customers)
+			account = Account(name=name,account_number=ledger_utils.generate_account_number(category),category=category)
 			account.full_clean()
 			account.save()
 			customer = Customer(name=name, email=email, phone=phone, address=address, account=account)

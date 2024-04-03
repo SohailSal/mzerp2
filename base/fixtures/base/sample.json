@@ -14,5 +14,13 @@
         "name": "cs",
         "value": 2
       }
+    },
+    {
+      "model": "base.setting",
+      "pk": 3,
+      "fields": {
+        "name": "customers",
+        "value": 3
+      }
     }
 ]
