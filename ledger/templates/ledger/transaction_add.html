@@ -59,7 +59,7 @@
                   <template x-for="(entry, index) in entries" :key="index">
                   <tr>
                     <td scope="row">
-                      <select class="form-select form-select-sm" x-model="entry.account">
+                      <select class="account" x-model="entry.account">
                         <option value="0" selected>Select account:</option>
                         <template x-for="option in {{accounts}}" :key="option.id">
                             <option :value="option.id" x-text="option.name"></option>
@@ -98,6 +98,7 @@
       </form>
     </div>
 
+    
 <script>
     function handler() {
     return {
@@ -130,6 +131,14 @@
             debit: '',
             credit: '',
          });
+
+         $(".account").each((i, e) => {
+  new SlimSelect({
+    select: e
+  })
+});
+
+
         },
         removeEntry(index) {
             this.entries.splice(index, 1);
@@ -221,6 +230,24 @@
       }
     }
 </script>
+
+<script>
+  // new SlimSelect({
+  //     select: "account"
+  // })
+  $(".account").each((i, e) => {
+  new SlimSelect({
+    select: e
+  })
+});
+// const selects = document.querySelectorAll('.account')
+// selects.forEach((selectElement) => {
+//   new SlimSelect({
+//     select: selectElement
+//   })
+// })
+</script>
+
 <style>
     [x-cloak] {display: none !important;  }
 </style>

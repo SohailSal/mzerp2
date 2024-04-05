@@ -36,7 +36,7 @@
       </div>
       <div class="col-md-2">
         <label for="parent_category" class="form-label">Parent Category</label>
-        <select class="form-select form-select-sm" x-model="parent_category">
+        <select x-model="parent_category" id="parent_category">
           <option value="0" selected>Select category:</option>
           <template x-for="option in {{categories}}" :key="option.id">
               <option :value="option.id" x-text="option.name"></option>
@@ -53,6 +53,12 @@
     </form>
   </div>
 
+<script>
+  new SlimSelect({
+      select: "#parent_category"
+  })
+</script>
+ 
 <script>
   function handler() {
   return {
