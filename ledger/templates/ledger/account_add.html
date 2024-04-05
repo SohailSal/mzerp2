@@ -36,7 +36,7 @@
       </div>
       <div class="col-md-4">
         <label for="category" class="form-label">Category</label>
-        <select class="form-select form-select-sm" x-model="category" id="category">
+        <select x-model="category" id="category">
           <option value="0" selected>Select category:</option>
           <template x-for="option in {{categories}}" :key="option.id">
               <option :value="option.id" x-text="option.name"></option>
@@ -56,7 +56,11 @@
       </div>
     </form>
   </div>
-
+<script>
+  new SlimSelect({
+     select: "#category"
+  })
+</script>
 <script>
   function handler() {
   return {
@@ -114,11 +118,6 @@
       }
     }
   }
-</script>
-<script>
-  new SlimSelect({
-     select: "#category"
-  });
 </script>
 <style>
   [x-cloak] {display: none !important;  }
