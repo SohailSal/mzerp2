@@ -22,5 +22,22 @@
         "name": "customers",
         "value": 3
       }
+    },
+    {
+      "model": "base.setting",
+      "pk": 4,
+      "fields": {
+        "name": "year",
+        "value": 1
+      }
+    },
+    {
+      "model": "base.year",
+      "pk": 1,
+      "fields": {
+        "year": 2023,
+        "start_date": "2022-07-01 00:00:00",
+        "end_date": "2023-06-30 23:59:59"
+      }
     }
 ]

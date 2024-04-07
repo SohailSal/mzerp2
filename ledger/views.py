@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction as trans
 from django.db import DatabaseError 
 from .models import Transaction, Document, Account, Entry, Category
+from base.models import Setting, Year
 from icecream import ic
 import fiscalyear
 import json
@@ -24,15 +25,17 @@ def transaction_add(request):
 
 def transaction_post(request):
 	data = json.loads(request.body)
-	ref = data['ref']
 	date = data['date']
+	ref = utils.generate_trans_number(date) if data['date'] else None
 	description = data['description']
 	document = get_object_or_404(Document, pk=1)
+	year_setting = Setting.objects.filter(name__iexact='year').first().value
+	year = get_object_or_404(Year, pk=year_setting)
 	entries = []
 
 	try:
 		with trans.atomic():
-			transaction = Transaction(ref=ref, date=date, document=document, description=description)
+			transaction = Transaction(ref=ref, date=date, document=document, year=year, description=description)
 			transaction.full_clean()
 			transaction.save()
 			for entry in data['entries']:

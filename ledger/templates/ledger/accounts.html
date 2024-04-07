@@ -5,6 +5,14 @@
 {% block subhead %} Accounts {% endblock %}
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{ message|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div>
   <a href="{% url 'ledger:account_add' %}" class="btn btn-outline-primary btn-sm">Add Account</a>
 </div>
@@ -26,7 +34,7 @@
         <td>{{ account.category }}</td>
         <td>
           <div class="row row-cols-lg-auto">
-            <a href="/edit/{{account.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <a href="/account_edit/{{account.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
             <form action="{% url 'ledger:account_delete' account.id %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>

@@ -30,11 +30,6 @@ def setting_post(request):
 		messages.success(request, 'The setting has been created successfully.')
 		return HttpResponseRedirect(reverse('base:settings'))
 	except ValidationError as e:
-		ic(e)
-		a = fiscalyear.FiscalYear(2018)
-		fiscalyear.setup_fiscal_calendar(start_month=7)
-		ic(a.start)
-		ic(a.end)
 #		messages.error(request, e)
 #		return HttpResponseRedirect(reverse('base:settings'))
 		return render(request, 'base/setting_add.html', 
@@ -93,16 +88,16 @@ def year_post(request):
             context={"year":request.POST['year'],"errors":e}
         )
 
-def year_edit(request,id):
-	year = get_object_or_404(Year, pk=id)
-	return render(request, 'base/year_edit.html', context={"year":year})
+# def year_edit(request,id):
+# 	year = get_object_or_404(Year, pk=id)
+# 	return render(request, 'base/year_edit.html', context={"year":year})
 
-def year_edit_post(request):
-	year = get_object_or_404(Year, pk=request.POST['id'])
-	year.year = request.POST['year']
-	year.save()
-	messages.success(request, 'The year has been updated successfully.')
-	return HttpResponseRedirect(reverse('base:years'))
+# def year_edit_post(request):
+# 	year = get_object_or_404(Year, pk=request.POST['id'])
+# 	year.year = request.POST['year']
+# 	year.save()
+# 	messages.success(request, 'The year has been updated successfully.')
+# 	return HttpResponseRedirect(reverse('base:years'))
 
 def year_delete(request,id):
 	year = get_object_or_404(Year, pk=id)

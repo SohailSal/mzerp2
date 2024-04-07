@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, FileResponse
 from django.urls import reverse
+from django.contrib import messages
 import json
 from django.db import transaction as trans
 from .models import Item
@@ -37,6 +38,12 @@ def item_post(request):
 		return JsonResponse({'errors':e.message_dict}, safe=False)
 
 	return JsonResponse({'messages':{'success':'The item saved!'}}, safe=False)
+
+def item_delete(request,id):
+	item = get_object_or_404(Item, pk=id)
+	item.delete()
+	messages.success(request, 'The item has been deleted successfully.')
+	return HttpResponseRedirect(reverse('inventory:items'))
 
 # def invoice(request,id):
 # 	buffer = utils.generate_invoice(id)

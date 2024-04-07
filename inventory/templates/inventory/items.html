@@ -4,6 +4,14 @@
 {% block subhead %} Items {% endblock %}
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{ message|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div>
   <a href="{% url 'inventory:item_add' %}" class="btn btn-outline-primary btn-sm">Add Item</a>
 </div>
@@ -25,8 +33,8 @@
         <td>{{ item.unit }}</td>
         <td>
           <div class="row row-cols-sm-auto">
-            <a href="/edit/{{item.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
-            <form action="{% url 'base:setting_delete' item.pk %}" method="post" class="">
+            <a href="/item_edit/{{item.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <form action="{% url 'inventory:item_delete' item.pk %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
             </form>

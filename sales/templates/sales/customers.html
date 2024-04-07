@@ -4,6 +4,14 @@
 {% block subhead %} Customers {% endblock %}
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{ message|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div>
   <a href="{% url 'sales:customer_add' %}" class="btn btn-outline-primary btn-sm">Add Customer</a>
 </div>
@@ -25,8 +33,8 @@
         <td>{{ customer.phone }}</td>
         <td>
           <div class="row row-cols-lg-auto">
-            <a href="/edit/{{customer.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
-            <form action="{% url 'base:setting_delete' customer.pk %}" method="post" class="">
+            <a href="/customer_edit/{{customer.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <form action="{% url 'sales:customer_delete' customer.pk %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
             </form>

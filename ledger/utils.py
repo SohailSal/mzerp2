@@ -1,8 +1,10 @@
 import xlsxwriter
 import io
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from .models import Category
+from .models import Category, Transaction, Document
 from icecream import ic
+from datetime import datetime
 
 def generate_report(ledger_data):
     # Create a new workbook and add a worksheet
@@ -160,4 +162,25 @@ def generate_account_number(category):
  
     ic(chunks)
     ic(str1)
+    return str1
+
+def generate_trans_number(d):
+    chunks = []
+    document = get_object_or_404(Document, pk=1)
+    # d = date.today()
+    prefix = document.prefix
+    dt = datetime.strptime(d,'%Y-%m-%d')
+    year = dt.strftime("%Y")
+    month = dt.strftime("%m")
+    # counter = '1' if Invoice.objects.count() == 0 else str(int(Invoice.objects.last().invoice_number[-3:])+1)
+    counter = '1' if Transaction.objects.filter(document=document).count() == 0 else str(int(Transaction.objects.filter(document=document).last().ref.split('/')[-1])+1)
+    chunks.append(prefix+'/')
+    chunks.append(year+'/')
+    chunks.append(month+'/')
+    # chunks.append(counter.zfill(3))
+    chunks.append(counter)
+    str1 = ""
+    for ele in chunks:
+        str1 += ele
+ 
     return str1

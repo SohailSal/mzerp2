@@ -4,6 +4,14 @@
 {% block subhead %} Transactions {% endblock %}
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{ message|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div>
   <a href="{% url 'ledger:transaction_add' %}" class="btn btn-outline-primary btn-sm">Add Transaction</a>
 </div>

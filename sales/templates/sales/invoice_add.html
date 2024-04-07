@@ -105,7 +105,6 @@
   return {
       messages: '',
       errors: '',
-      invoice_number: '',
       invoice_date: '',
       customer: '',
       description: '',
@@ -150,7 +149,6 @@
               method: "post",
               body: JSON.stringify({
                   entries: this.entries,
-                  invoice_number: this.invoice_number,
                   invoice_date: this.invoice_date,
                   customer: this.customer,
                   description: this.description,
@@ -169,7 +167,6 @@
               this.msgShow = true
               setTimeout(() => this.msgShow = false, 4000)
               if (!this.save) {
-                this.invoice_number = ''
                 this.invoice_date = ''
                 this.customer = ''
                 this.description = ''

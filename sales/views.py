@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, FileResponse
 from django.urls import reverse
+from django.contrib import messages
 import json
 from django.db import transaction as trans
 from .models import Customer, Invoice, InvoiceItem
 from ledger.models import Category, Account, Document, Transaction, Entry
 from inventory.models import Item
-from base.models import Setting
+from base.models import Setting, Year
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError 
 from icecream import ic
@@ -43,6 +44,14 @@ def customer_post(request):
 
 	return JsonResponse({'messages':{'success':'The customer saved!'}}, safe=False)
 
+def customer_delete(request,id):
+	customer = get_object_or_404(Customer, pk=id)
+	account = get_object_or_404(Account, pk=customer.account.id)
+	customer.delete()
+	account.delete()
+	messages.success(request, 'The customer has been deleted successfully.')
+	return HttpResponseRedirect(reverse('sales:customers'))
+
 def invoices(request):
 	invoices = Invoice.objects.order_by('id')
 	return render(request, 'sales/invoices.html', context={"invoices": invoices})
@@ -60,16 +69,18 @@ def invoice_post(request):
 	customer = None if (data['customer'] == '') else get_object_or_404(Customer, pk=data['customer'])
 	description = data['description']
 	document = get_object_or_404(Document, pk=2)
+	year_setting = Setting.objects.filter(name__iexact='year').first().value
+	year = get_object_or_404(Year, pk=year_setting)
 	items = []
 	cab1 = Setting.objects.filter(name__iexact='cab1').first().value
 	cs = Setting.objects.filter(name__iexact='cs').first().value
-	debit = get_object_or_404(Account, pk=cab1) if (customer == None) else get_object_or_404(Account, pk=customer.id)
+	debit = get_object_or_404(Account, pk=cab1) if (customer == None) else get_object_or_404(Account, pk=customer.account.id)
 	credit = get_object_or_404(Account, pk=cs)
 	total = 0
 
 	try:
 		with trans.atomic():
-			transaction = Transaction(ref=invoice_number, date=invoice_date, document=document, description=description)
+			transaction = Transaction(ref=invoice_number, date=invoice_date, document=document, year=year, description=description)
 			transaction.full_clean()
 			transaction.save()
 			invoice = Invoice(transaction=transaction, invoice_number=invoice_number, customer=customer, invoice_date=invoice_date, description=description)
@@ -99,12 +110,20 @@ def invoice_post(request):
 		ic(e)
 		return JsonResponse({'errors':e.message_dict}, safe=False)
 
-	return JsonResponse({'messages':{'success':'The document saved!'}}, safe=False)
+	return JsonResponse({'messages':{'success':'The invoice saved!'}}, safe=False)
 
 def getRate(request):
 	data = json.loads(request.body)
 	item = get_object_or_404(Item, pk=data['item'])
 	return JsonResponse({'rate': item.sale_rate}, safe=False)
+
+def invoice_delete(request,id):
+	invoice = get_object_or_404(Invoice, pk=id)
+	transaction = get_object_or_404(Transaction, pk=invoice.transaction.id)
+	invoice.delete()
+	transaction.delete()
+	messages.success(request, 'The invoice has been deleted successfully.')
+	return HttpResponseRedirect(reverse('sales:invoices'))
 
 def invoice(request,id):
 	buffer = utils.generate_invoice(id)

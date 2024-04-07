@@ -1,4 +1,5 @@
 from django.db import models
+from base.models import Year
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -47,6 +48,7 @@ class Transaction(models.Model):
     date = models.DateField()
     ref = models.CharField(max_length=20, blank=False, default=None)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    year = models.ForeignKey(Year, on_delete=models.CASCADE)
     description = models.TextField(blank=False, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
