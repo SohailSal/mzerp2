@@ -3,6 +3,8 @@
 {% block mainhead %} Ledger {% endblock %}
 {% block subhead %} Insert Transaction {% endblock %}
 {% block content %}
+
+
   <div x-data="handler()" x-cloak>
     <form class="row g-3" id="transactionForm" @submit.prevent="submit">
         <template x-if="errors">
@@ -56,7 +58,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <template x-for="(entry, index) in entries" :key="index">
+                  <template x-for="(entry, index) in entries" :key="index" 
+                   x-init=" $nextTick(() => { slim() })
+                   $watch('entries', () => { slim() })">
                   <tr>
                     <td scope="row">
                       <select class="account" x-model="entry.account">
@@ -125,20 +129,20 @@
         save: false,
         msgShow: false,
 
+        slim(){
+          const selects = document.querySelectorAll('.account')
+          selects.forEach((selectElement) => {
+            new SlimSelect({
+              select: selectElement
+            })
+          })
+        },
         addEntry() {
           this.entries.push({
             account: '',
             debit: '',
             credit: '',
          });
-
-         $(".account").each((i, e) => {
-  new SlimSelect({
-    select: e
-  })
-});
-
-
         },
         removeEntry(index) {
             this.entries.splice(index, 1);
@@ -230,24 +234,6 @@
       }
     }
 </script>
-
-<script>
-  // new SlimSelect({
-  //     select: "account"
-  // })
-  $(".account").each((i, e) => {
-  new SlimSelect({
-    select: e
-  })
-});
-// const selects = document.querySelectorAll('.account')
-// selects.forEach((selectElement) => {
-//   new SlimSelect({
-//     select: selectElement
-//   })
-// })
-</script>
-
 <style>
     [x-cloak] {display: none !important;  }
 </style>

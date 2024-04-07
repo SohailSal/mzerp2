@@ -40,7 +40,7 @@
       </div>
       <div class="col-md-4">
         <label for="customer" class="form-label">Customer</label>
-        <select class="form-select form-select-sm" x-model="customer">
+        <select x-model="customer" id="customer">
           <option value="0" selected>Cash sales:</option>
           <template x-for="option in {{customers}}" :key="option.id">
               <option :value="option.id" x-text="option.name"></option>
@@ -64,10 +64,12 @@
               </tr>
             </thead>
             <tbody>
-              <template x-for="(entry, index) in entries" :key="index">
+              <template x-for="(entry, index) in entries" :key="index" 
+              x-init=" $nextTick(() => { slim() })
+              $watch('entries', () => { slim() })">
               <tr>
                 <td scope="row">    
-                  <select class="form-select form-select-sm" x-model="entry.item" @change="getRate(entry.item, index)">
+                  <select class="stock" x-model="entry.item" @change="getRate(entry.item, index)">
                     <option value="0" selected>Select item:</option>
                     <template x-for="option in {{items}}" :key="option.id">
                         <option :value="option.id" x-text="option.name"></option>
@@ -93,6 +95,12 @@
   </div>
 
 <script>
+  new SlimSelect({
+      select: "#customer"
+  })
+</script>
+   
+<script>
   function handler() {
   return {
       messages: '',
@@ -111,6 +119,15 @@
             rate: null,
             amount: null,
             }],
+
+      slim(){
+        const selects = document.querySelectorAll('.stock')
+        selects.forEach((selectElement) => {
+          new SlimSelect({
+            select: selectElement
+          })
+        })
+      },
 
       addEntry() {
         this.entries.push({

@@ -13,6 +13,7 @@ class Category(models.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'parent': self.parent_category,
         }
 
 class Account(models.Model):

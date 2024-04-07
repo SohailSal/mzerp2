@@ -3,28 +3,22 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from .models import Setting
+from .models import Setting, Year
 from icecream import ic
 import fiscalyear
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from datetime import datetime
 
-def base(request):
-	return render(request, 'base/base.html')
+# settings
 
-def blank(request):
-	settings = Setting.objects.order_by('id')
-	return render(request, 'base/index.html', context={"settings": settings,"hello": "world"})
+def settings(request):
+	settings = Setting.objects.all()
+	return render(request, 'base/settings.html', context={'settings':settings})
 
 def setting_add(request):
 	return render(request, 'base/setting_add.html')
-
-def alpine_form(request):
-    return render(request, 'base/alpine_form.html', context={})
-
-def chart(request):
-    return render(request, 'base/chart.html', context={})
 
 def setting_post(request):
 	name = request.POST['name']
@@ -34,7 +28,7 @@ def setting_post(request):
 		setting.full_clean()
 		setting.save()
 		messages.success(request, 'The setting has been created successfully.')
-		return HttpResponseRedirect(reverse('base:blank'))
+		return HttpResponseRedirect(reverse('base:settings'))
 	except ValidationError as e:
 		ic(e)
 		a = fiscalyear.FiscalYear(2018)
@@ -42,7 +36,7 @@ def setting_post(request):
 		ic(a.start)
 		ic(a.end)
 #		messages.error(request, e)
-#		return HttpResponseRedirect(reverse('base:blank'))
+#		return HttpResponseRedirect(reverse('base:settings'))
 		return render(request, 'base/setting_add.html', 
 			context={"name":request.POST['name'], "value":request.POST['value'],"errors":e}
 		)
@@ -57,19 +51,64 @@ def setting_edit_post(request):
 	setting.value = request.POST['value']
 	setting.save()
 	messages.success(request, 'The setting has been updated successfully.')
-	return HttpResponseRedirect(reverse('base:blank'))
+	return HttpResponseRedirect(reverse('base:settings'))
 
 def setting_delete(request,id):
 	setting = get_object_or_404(Setting, pk=id)
 	setting.delete()
 	messages.success(request, 'The setting has been deleted successfully.')
-	return HttpResponseRedirect(reverse('base:blank'))
+	return HttpResponseRedirect(reverse('base:settings'))
 
-def setting_post_old(request):
-    data = request.POST
-    print(f'{data = }')
+# years
 
-    return JsonResponse({'status': 'success'})
+def years(request):
+	years = Year.objects.all()
+	return render(request, 'base/years.html', context={'years':years})
+
+def year_add(request):
+	return render(request, 'base/year_add.html')
+
+def year_post(request):
+    fiscalyear.setup_fiscal_calendar(start_month=7)
+    a = fiscalyear.FiscalYear(int(request.POST['year']))
+    # ic(a.start.strftime("%Y-%m-%d, %H:%M:%S"))
+    # ic(a.fiscal_year)
+    # ic(a.start.month)
+    # ic(a.start.year)
+    # ic(a.end.month)
+    # ic(a.end.year)
+    year = Year(year=a.fiscal_year, start_date=a.start.strftime("%Y-%m-%d %H:%M:%S"), end_date=a.end.strftime("%Y-%m-%d %H:%M:%S"))
+    try:
+        year.full_clean()
+        year.save()
+        messages.success(request, 'The year has been created successfully.')
+        return HttpResponseRedirect(reverse('base:years'))
+    except ValidationError as e:
+		# ic(e)
+		# a = fiscalyear.FiscalYear(2018)
+		# fiscalyear.setup_fiscal_calendar(start_month=7)
+		# ic(a.start)
+		# ic(a.end)
+        return render(request, 'base/year_add.html', 
+            context={"year":request.POST['year'],"errors":e}
+        )
+
+def year_edit(request,id):
+	year = get_object_or_404(Year, pk=id)
+	return render(request, 'base/year_edit.html', context={"year":year})
+
+def year_edit_post(request):
+	year = get_object_or_404(Year, pk=request.POST['id'])
+	year.year = request.POST['year']
+	year.save()
+	messages.success(request, 'The year has been updated successfully.')
+	return HttpResponseRedirect(reverse('base:years'))
+
+def year_delete(request,id):
+	year = get_object_or_404(Year, pk=id)
+	year.delete()
+	messages.success(request, 'The year has been deleted successfully.')
+	return HttpResponseRedirect(reverse('base:years'))
 
 # logins
 

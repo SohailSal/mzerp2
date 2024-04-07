@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+{% block title %} Add Year {% endblock %}
+{% block mainhead %} Base {% endblock %}
+{% block subhead %} Add Year {% endblock %}
+{% block content %}
+
+<form action="/year_post" method="post">
+{% csrf_token %}
+
+{% if errors %}
+    {% for error in errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+Year:<br>
+<input name="year" value="{% if year %}{{year}}{% endif %}">
+<br><br>
+<input type="submit" value="Submit">
+</form>
+
+{% endblock %}

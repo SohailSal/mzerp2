@@ -1,0 +1,44 @@
+{% extends "base/base.html" %}
+{% block title %} Years {% endblock %}
+{% block mainhead %} Base {% endblock %}
+{% block subhead %} Years {% endblock %}
+{% block content %}
+
+<div>
+  <a href="{% url 'base:year_add' %}" class="btn btn-outline-primary btn-sm">Add Year</a>
+</div>
+<div class="">
+  <table class="table table-striped table-sm" id="myTable">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for year in years %}
+      <tr>
+        <td>{{ year.year }}</td>
+        <td>{{ year.start_date }}</td>
+        <td>{{ year.end_date }}</td>
+        <td>
+          <div class="row row-cols-lg-auto g-3">
+            <a href="/edit/{{year.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <form action="{% url 'base:year_delete' year.pk %}" method="post" class="">
+              {% csrf_token %}
+              <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+  let table = new DataTable('#myTable');
+</script>
+
+{% endblock %}
