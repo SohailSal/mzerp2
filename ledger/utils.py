@@ -160,8 +160,8 @@ def generate_account_number(category):
     for ele in chunks:
         str1 += ele
  
-    ic(chunks)
-    ic(str1)
+    # ic(chunks)
+    # ic(str1)
     return str1
 
 def generate_trans_number(d):

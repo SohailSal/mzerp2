@@ -114,8 +114,12 @@ def invoice_post(request):
 
 def getRate(request):
 	data = json.loads(request.body)
-	item = get_object_or_404(Item, pk=data['item'])
-	return JsonResponse({'rate': item.sale_rate}, safe=False)
+	if data['item'] == 0:
+		return JsonResponse({'rate': None}, safe=False)
+	else: 
+		item = get_object_or_404(Item, pk=data['item'])
+		rate = item.sale_rate if item else None
+		return JsonResponse({'rate': rate}, safe=False)
 
 def invoice_delete(request,id):
 	invoice = get_object_or_404(Invoice, pk=id)
