@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .models import Setting, Year
-from ledger.models import Category, Account
+from ledger.models import Category, Account, Entry
 from icecream import ic
 import fiscalyear
 from django.contrib.auth import authenticate, login as auth_login, logout
@@ -186,3 +186,15 @@ def register(request):
 def logout_view(request):
     logout(request)
     return redirect('/home')
+
+def reports(request):
+    accounts = [i.select() for i in Account.objects.all()]
+    return render(request, 'base/reports.html', context={"accounts": accounts})
+
+def reports_ledger(request):
+    start = request.POST['start_date']
+    end = request.POST['end_date']
+    account = get_object_or_404(Account, pk=request.POST['acc'])
+    entries = [i.ledger() for i in Entry.objects.filter(account=account, transaction__date__range=(start,end))]
+    response = utils.generate_report(entries)
+    return response

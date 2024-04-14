@@ -1,0 +1,49 @@
+{% extends "base/base.html" %}
+{% block title %} Reports {% endblock %}
+{% block mainhead %} Ledger {% endblock %}
+{% block subhead %} Reports {% endblock %}
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{ message|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div>
+  <form action="/reports_ledger" method="post" class="row gx-3 gy-2 align-items-end">
+    {% csrf_token %}
+
+    <div class="col-sm-3">
+      <label for="start_date" class="form-label">Start Date</label>
+      <input type="date" class="form-control form-control-sm" id="start_date" name="start_date">
+    </div>
+    <div class="col-sm-3">
+      <label for="end_date" class="form-label">End Date</label>
+      <input type="date" class="form-control form-control-sm" id="end_date" name="end_date">
+    </div>
+
+    <div class="col-sm-3">
+      <label for="acc" class="col-sm-2 col-form-label">Account</label>
+        <select id="acc" name="acc">
+          {% for account in accounts %} 
+            <option value="{{account.id}}" {% if account.id|slugify == settings.0.value %} selected {% endif %}>{{account.name}}</option>
+          {% endfor %} 
+        </select>
+    </div>
+
+    <div class="col-auto">
+      <button type="submit" class="btn btn-sm btn-primary ">Submit</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  new SlimSelect({
+    select: '#acc'
+  })
+</script>
+{% endblock %}

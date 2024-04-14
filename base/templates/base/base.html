@@ -86,7 +86,7 @@
 
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'base:dashboard' %}"> 
+                <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="{% url 'base:dashboard' %}"> 
                   <span data-feather="trello"></span>
                   Desktop
                 </a>
@@ -131,15 +131,21 @@
                 </ul>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'base:settings' %}"> 
-                  <span data-feather="sliders"></span>
-                  Settings
+                <a class="nav-link {% if request.path == '/reports' %}active{% endif %}" href="{% url 'base:reports' %}"> 
+                  <span data-feather="clipboard"></span>
+                  Reports
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'base:years' %}"> 
+                <a class="nav-link {% if request.path == '/years' %}active{% endif %}" href="{% url 'base:years' %}"> 
                   <span data-feather="calendar"></span>
                   Years
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {% if request.path == '/settings' %}active{% endif %}" href="{% url 'base:settings' %}"> 
+                  <span data-feather="sliders"></span>
+                  Settings
                 </a>
               </li>
             </ul>

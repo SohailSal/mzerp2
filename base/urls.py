@@ -33,5 +33,9 @@ urlpatterns = [
     path('dashboard', views.dashboard, name="dashboard"),
     path('login', views.login, name='login'),
     path('register', views.register, name='register'), 
-    path('logout', views.logout_view, name='logout'),    
+    path('logout', views.logout_view, name='logout'),
+
+# reports
+    path('reports', views.reports, name='reports'),  
+    path('reports_ledger', views.reports_ledger, name='reports_ledger'),
 ]
