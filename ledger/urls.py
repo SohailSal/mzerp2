@@ -20,5 +20,5 @@ urlpatterns = [
     # path('sample_post', views.sample_post, name='sample_post'),
 #    path('edit/<int:id>', views.transaction_edit, name='transaction_edit'),
 #    path('transaction_edit_post', views.transaction_edit_post, name='transaction_edit_post'),
-    path('report', views.report, name='report'),
+    path('report/<int:id>', views.report, name='report'),
 ]

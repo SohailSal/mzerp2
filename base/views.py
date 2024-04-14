@@ -4,18 +4,39 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .models import Setting, Year
+from ledger.models import Category, Account
 from icecream import ic
 import fiscalyear
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from datetime import datetime
+from ledger import utils
 
 # settings
 
 def settings(request):
-	settings = Setting.objects.all()
-	return render(request, 'base/settings.html', context={'settings':settings})
+    settings = [i.select() for i in Setting.objects.all()]
+    accounts = [i.select() for i in Account.objects.all()]
+    categories = utils.tree()
+    years = Year.objects.all()
+    return render(request, 'base/settings.html', context={'settings':settings, 'accounts':accounts, 'categories':categories, 'years':years})
+
+def settings_save(request):
+    arr = []
+    arr.append(int(request.POST['cab1']))
+    arr.append(int(request.POST['cs']))
+    arr.append(int(request.POST['customers']))
+    arr.append(int(request.POST['year']))
+    settings = Setting.objects.all()
+    counter = 0
+    for setting in settings:
+        setting.value = arr[counter]
+        setting.save()
+        counter = counter + 1
+    messages.success(request, 'The settings have been updated.')
+    return HttpResponseRedirect(reverse('base:settings'))
+    # return render(request, 'base/dashboard.html')
 
 def setting_add(request):
 	return render(request, 'base/setting_add.html')

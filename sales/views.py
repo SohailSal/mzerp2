@@ -116,7 +116,6 @@ def getRate(request):
 	data = json.loads(request.body)
 	if data['item']:
 		item = get_object_or_404(Item, pk=data['item'])
-		# rate = item.sale_rate if item else None
 		return JsonResponse({'rate': item.sale_rate}, safe=False)
 	else:
 		return JsonResponse({'rate': 0}, safe=False)

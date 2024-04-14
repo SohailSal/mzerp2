@@ -56,10 +56,10 @@
                 <tbody>
                   <template x-for="(entry, index) in entries" :key="index" 
                    x-init=" $nextTick(() => { slim() })
-                   $watch('entries', () => { slim() })">
+                   $watch('counter', () => { slim() })">
                   <tr>
                     <td scope="row">
-                      <select class="account" x-model="entry.account">
+                      <select x-model="entry.account" :id="$id('acc')">
                         <option value="0" selected>Select account:</option>
                         <template x-for="option in {{accounts}}" :key="option.id">
                             <option :value="option.id" x-text="option.name"></option>
@@ -124,21 +124,34 @@
         submitText: 'Insert Transaction',
         save: false,
         msgShow: false,
+        counter: 2,
 
         slim(){
-          const selects = document.querySelectorAll('.account')
-          selects.forEach((selectElement) => {
+          if(this.counter == 2)
+          {
             new SlimSelect({
-              select: selectElement
+              select: "#acc-1"
             })
-          })
+            new SlimSelect({
+              select: "#acc-2"
+            })
+          }
+          else
+          {
+            var str1 = "#acc-"+this.counter
+            console.log(str1)
+            new SlimSelect({
+              select: str1
+            })
+          }
         },
         addEntry() {
           this.entries.push({
             account: '',
             debit: '',
             credit: '',
-         });
+           });
+          this.counter = this.counter + 1
         },
         removeEntry(index) {
             this.entries.splice(index, 1);
@@ -196,24 +209,9 @@
                 this.messages = data.messages
                 if(!this.errors){
                   this.msgShow = true
-                  setTimeout(() => this.msgShow = false, 4000)
+                  setTimeout(() => this.msgShow = false, 1000)
                   if (!this.save) {
-                    this.ref = ''
-                    this.date = ''
-                    this.description = ''
-                    this.entries = [{
-                        account: '',
-                        debit: '',
-                        credit: '',
-                        },
-                        {
-                        account: '',
-                        debit: '',
-                        credit: '',
-                    }],
-                    this.tdebit = null
-                    this.tcredit = null
-                    this.difference = null
+                    setTimeout(() => location.reload() = false, 1500)
                   }
                }
             })

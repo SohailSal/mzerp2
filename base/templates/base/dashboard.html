@@ -4,6 +4,14 @@
 {% block subhead %}  {% endblock %}
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{ message|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
   <div><strong>Do you want to logout? <a href="/logout">Logout</a></strong></div>
 
   <canvas class="my-4" id="myChart" width="900" height="380"></canvas>

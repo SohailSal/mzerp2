@@ -15,6 +15,13 @@ class Setting(models.Model):
     def __str__(self):
         return self.name
 
+    def select(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'value': self.value,
+        }
+
 class Tax(models.Model):
     name = models.CharField(max_length=100)
     rate = models.DecimalField(max_digits=5, decimal_places=2)

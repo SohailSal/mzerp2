@@ -141,8 +141,8 @@ def account_delete(request,id):
 #     	print(x['account'])
 #     return JsonResponse({'status': 'success'})
 
-def report(request):
-	entries = [i.ledger() for i in Entry.objects.all()]
-	ic(entries)
+def report(request,id):
+	account = get_object_or_404(Account, pk=id)
+	entries = [i.ledger() for i in Entry.objects.filter(account=account)]
 	response = utils.generate_report(entries)
 	return response

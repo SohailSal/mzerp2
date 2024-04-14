@@ -33,7 +33,7 @@
         <td>{{ invoice.invoice_date }}</td>
         <td>
           <div class="row row-cols-lg-auto">
-            <a href="/invoice_edit/{{invoice.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <a href="{% url 'sales:invoice' invoice.pk %}" class="btn btn-outline-secondary btn-sm">PDF</a>
             <form action="{% url 'sales:invoice_delete' invoice.pk %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>

@@ -132,7 +132,7 @@ def generate_invoice(id):
 	# Add total amount
     c.drawString(30, 170, "Total Amount:")
     c.drawString(540, 170, f"Rs.{total_amount:.2f}")
-    c.drawString(30, 150, num2words(total_amount))
+    c.drawString(30, 150, num2words(f"{total_amount:.2f}"))
 
     c.showPage()
     c.save()

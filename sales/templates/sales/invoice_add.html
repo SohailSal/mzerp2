@@ -64,13 +64,13 @@
               </tr>
             </thead>
             <tbody>
-              <!-- <template x-for="(entry, index) in entries" :key="index" 
+              <template x-for="(entry, index) in entries" :key="index" 
               x-init=" $nextTick(() => { slim() })
-              $watch('entries', () => { slim() })"> -->
-              <template x-for="(entry, index) in entries" :key="index">
+              $watch('counter', () => { slim() })">
+
               <tr>
                 <td scope="row">    
-                  <select class="stock" x-model="entry.item" @change="getRate(entry.item, index)">
+                  <select x-model="entry.item" @change="getRate(entry.item, index)" :id="$id('stock')">
                     <option value="0" selected>Select item:</option>
                     <template x-for="option in {{items}}" :key="option.id">
                         <option :value="option.id" x-text="option.name"></option>
@@ -119,13 +119,13 @@
             rate: null,
             amount: null,
             }],
+      counter: 1,
 
       slim(){
-        const selects = document.querySelectorAll('.stock')
-        selects.forEach((selectElement) => {
-          new SlimSelect({
-            select: selectElement
-          })
+        var str1 = "#stock-"+this.counter
+        console.log(str1)
+        new SlimSelect({
+          select: str1
         })
       },
 
@@ -135,7 +135,8 @@
           quantity: null,
           rate: null,
           amount: null,
-        });
+        })
+        this.counter = this.counter + 1
       },
       removeEntry(index) {
           this.entries.splice(index, 1);
@@ -166,17 +167,9 @@
             this.messages = data.messages
             if(!this.errors){
               this.msgShow = true
-              setTimeout(() => this.msgShow = false, 4000)
+              setTimeout(() => this.msgShow = false, 1000)
               if (!this.save) {
-                this.invoice_date = ''
-                this.customer = ''
-                this.description = ''
-                this.entries = [{
-                  item: 0,
-                  quantity: null,
-                  rate: null,
-                  amount: null,
-                  }]
+                setTimeout(() => location.reload() = false, 1500)
               }
             }
           })
@@ -192,28 +185,28 @@
       },
       getRate(item,index){
         console.log(item)
-        // if(item == 0){
-        //   this.entries[index].rate = null
-        //   this.updateFields(index)
-        // }
-        // else{
-        // fetch('getRate', {
-        //       method: "post",
-        //       body: JSON.stringify({
-        //         item:item,
-        //       }),
-        //       headers: {
-        //           'X-CSRFToken': '{{ csrf_token }}',
-        //       },
-        //   })
-        //   .then(response => {
-        //       return response.json();
-        //   })
-        //   .then(data => {
-        //     this.entries[index].rate = data.rate
-        //     this.updateFields(index)
-        //   })
-        // }
+        if(item == 0){
+          this.entries[index].rate = null
+          this.updateFields(index)
+        }
+        else{
+        fetch('getRate', {
+              method: "post",
+              body: JSON.stringify({
+                item:item,
+              }),
+              headers: {
+                  'X-CSRFToken': '{{ csrf_token }}',
+              },
+          })
+          .then(response => {
+              return response.json();
+          })
+          .then(data => {
+            this.entries[index].rate = data.rate
+            this.updateFields(index)
+          })
+        }
       },
       updateFields(i){
           this.entries[i].amount = this.entries[i].quantity * this.entries[i].rate

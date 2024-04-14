@@ -1,40 +1,79 @@
 {% extends "base/base.html" %}
 {% block title %} Settings {% endblock %}
+{% block mainhead %} Base {% endblock %}
+{% block subhead %} Settings {% endblock %}
 {% block content %}
 
-            <strong>{{user.username}}</strong>
-            <div>
-              <a href="{% url 'base:setting_add' %}" class="btn btn-outline-primary btn-sm">Add Setting</a>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-striped table-sm">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for setting in settings %}
-                  <tr>
-                    <td>{{ setting.id }}</td>
-                    <td>{{ setting.name }}</td>
-                    <td>{{ setting.value }}</td>
-                    <td>
-                      <div class="row row-cols-lg-auto g-3">
-                        <a href="/edit/{{setting.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
-                        <form action="{% url 'base:setting_delete' setting.pk %}" method="post" class="">
-                          {% csrf_token %}
-                          <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{ message|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+<div>
+  <form action="/settings_save" method="post">
+    {% csrf_token %}
+    <div class="form-group row">
+      <label for="cab1" class="col-sm-2 col-form-label">Cash at Bank 1</label>
+      <div class="col-sm-4">
+        <select id="cab1" name="cab1">
+          {% for account in accounts %} 
+            <option value="{{account.id}}" {% if account.id|slugify == settings.0.value %} selected {% endif %}>{{account.name}}</option>
+          {% endfor %} 
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="cs" class="col-sm-2 col-form-label">Cash Sales</label>
+      <div class="col-sm-4">
+        <select id="cs" name="cs">
+          {% for account in accounts %} 
+            <option value="{{account.id}}" {% if account.id|slugify == settings.1.value %} selected {% endif %}>{{account.name}}</option>
+          {% endfor %} 
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="customers" class="col-sm-2 col-form-label">Customers</label>
+      <div class="col-sm-4">
+        <select id="customers" name="customers">
+          {% for category in categories %} 
+            <option value="{{category.id}}" {% if category.id|slugify == settings.2.value %} selected {% endif %}>{{category.name}}</option>
+          {% endfor %} 
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="year" class="col-sm-2 col-form-label">Year</label>
+      <div class="col-sm-4">
+        <select id="year" name="year">
+          {% for year in years %} 
+            <option value="{{year.id}}" {% if year.id|slugify == settings.3.value %} selected {% endif %}>{{year.year}}</option>
+          {% endfor %} 
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-4">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
+</div>
 
+<script>
+  new SlimSelect({
+    select: '#cab1'
+  })
+  new SlimSelect({
+    select: '#cs'
+  })
+  new SlimSelect({
+    select: '#customers'
+  })
+  new SlimSelect({
+    select: '#year'
+  })
+</script>
 {% endblock %}

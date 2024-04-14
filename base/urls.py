@@ -8,6 +8,7 @@ urlpatterns = [
 	path('settings',views.settings,name='settings'),
  	path('setting_add',views.setting_add,name='setting_add'),
     path('setting_post', views.setting_post, name='setting_post'),
+    path('settings_save', views.settings_save, name='settings_save'),
     path('edit/<int:id>', views.setting_edit, name='setting_edit'),
     path('setting_edit_post', views.setting_edit_post, name='setting_edit_post'),
     path('delete/<int:id>', views.setting_delete, name='setting_delete'),
