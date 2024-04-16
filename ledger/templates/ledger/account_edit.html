@@ -1,0 +1,35 @@
+{% extends "base/base.html" %}
+{% block title %} Add Account {% endblock %}
+{% block mainhead %} Ledger {% endblock %}
+{% block subhead %} Edit Account {% endblock %}
+{% block content %}
+
+<form action="{% url 'ledger:account_edit_post' %}" method="post" class="row gx-3 gy-2 align-items-end" >
+{% csrf_token %}
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+    <input name="id" value="{{account.id}}" hidden>
+    <div class="col-sm-4">
+        <label for="category" class="col-form-label">category</label>
+        <select id="category" name="category">
+        {% for category in categories %} 
+            <option value="{{category.id}}" {% if category.id == ac_cat %} selected {% endif %}>{{category.name}}</option>
+        {% endfor %} 
+        </select>
+    </div>
+    <div class="col-sm-4">
+        <label for="name" class="col-form-label">Name</label>
+        <input type="text" class="form-control form-control-sm" id="name" value="{{account.name}}" name="name">
+    </div>
+    <div class="col-sm-12">
+        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+    </div>
+</form>
+
+<script>
+    new SlimSelect({
+      select: '#category'
+    })
+</script>
+{% endblock %}

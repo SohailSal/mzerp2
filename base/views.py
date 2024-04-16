@@ -38,42 +38,42 @@ def settings_save(request):
     return HttpResponseRedirect(reverse('base:settings'))
     # return render(request, 'base/dashboard.html')
 
-def setting_add(request):
-	return render(request, 'base/setting_add.html')
+# def setting_add(request):
+# 	return render(request, 'base/setting_add.html')
 
-def setting_post(request):
-	name = request.POST['name']
-	value = request.POST['value']
-	setting = Setting(name=name, value=value)
-	try:
-		setting.full_clean()
-		setting.save()
-		messages.success(request, 'The setting has been created successfully.')
-		return HttpResponseRedirect(reverse('base:settings'))
-	except ValidationError as e:
-#		messages.error(request, e)
-#		return HttpResponseRedirect(reverse('base:settings'))
-		return render(request, 'base/setting_add.html', 
-			context={"name":request.POST['name'], "value":request.POST['value'],"errors":e}
-		)
+# def setting_post(request):
+# 	name = request.POST['name']
+# 	value = request.POST['value']
+# 	setting = Setting(name=name, value=value)
+# 	try:
+# 		setting.full_clean()
+# 		setting.save()
+# 		messages.success(request, 'The setting has been created successfully.')
+# 		return HttpResponseRedirect(reverse('base:settings'))
+# 	except ValidationError as e:
+# #		messages.error(request, e)
+# #		return HttpResponseRedirect(reverse('base:settings'))
+# 		return render(request, 'base/setting_add.html', 
+# 			context={"name":request.POST['name'], "value":request.POST['value'],"errors":e}
+# 		)
 
-def setting_edit(request,id):
-	setting = get_object_or_404(Setting, pk=id)
-	return render(request, 'base/setting_edit.html', context={"setting":setting})
+# def setting_edit(request,id):
+# 	setting = get_object_or_404(Setting, pk=id)
+# 	return render(request, 'base/setting_edit.html', context={"setting":setting})
 
-def setting_edit_post(request):
-	setting = get_object_or_404(Setting, pk=request.POST['id'])
-	setting.name = request.POST['name']
-	setting.value = request.POST['value']
-	setting.save()
-	messages.success(request, 'The setting has been updated successfully.')
-	return HttpResponseRedirect(reverse('base:settings'))
+# def setting_edit_post(request):
+# 	setting = get_object_or_404(Setting, pk=request.POST['id'])
+# 	setting.name = request.POST['name']
+# 	setting.value = request.POST['value']
+# 	setting.save()
+# 	messages.success(request, 'The setting has been updated successfully.')
+# 	return HttpResponseRedirect(reverse('base:settings'))
 
-def setting_delete(request,id):
-	setting = get_object_or_404(Setting, pk=id)
-	setting.delete()
-	messages.success(request, 'The setting has been deleted successfully.')
-	return HttpResponseRedirect(reverse('base:settings'))
+# def setting_delete(request,id):
+# 	setting = get_object_or_404(Setting, pk=id)
+# 	setting.delete()
+# 	messages.success(request, 'The setting has been deleted successfully.')
+# 	return HttpResponseRedirect(reverse('base:settings'))
 
 # years
 

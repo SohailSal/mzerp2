@@ -126,6 +126,21 @@ def account_post(request):
 
 	return JsonResponse({'messages':{'success':'The Account saved!'}}, safe=False)
 
+def account_edit(request,id):
+	account = get_object_or_404(Account, pk=id)
+	ac_cat = account.category.id
+	categories = utils.tree()
+	return render(request, 'ledger/account_edit.html', context={"account":account, "categories": categories, "ac_cat": ac_cat})
+
+def account_edit_post(request):
+	account = get_object_or_404(Account, pk=request.POST['id'])
+	category = get_object_or_404(Category, pk=request.POST['category'])
+	account.name = request.POST['name']
+	account.category = category
+	account.save()
+	messages.success(request, 'The account has been updated successfully.')
+	return HttpResponseRedirect(reverse('ledger:accounts'))
+
 def account_delete(request,id):
 	account = get_object_or_404(Account, pk=id)
 	account.delete()
