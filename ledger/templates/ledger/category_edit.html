@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+{% block title %} Edit Category {% endblock %}
+{% block mainhead %} Ledger {% endblock %}
+{% block subhead %} Edit Category {% endblock %}
+{% block content %}
+
+<form action="{% url 'ledger:category_edit_post' %}" method="post" class="row gx-3 gy-2 align-items-end" >
+{% csrf_token %}
+
+{% if messages %}
+<div class="alert alert-primary" role="alert">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+
+    <input name="id" value="{{category.id}}" hidden>
+    <div class="col-sm-4">
+        <label for="name" class="col-form-label">Name</label>
+        <input type="text" class="form-control form-control-sm" id="name" value="{{category.name}}" name="name">
+    </div>
+    <div class="col-sm-4">
+        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+    </div>
+</form>
+
+{% endblock %}

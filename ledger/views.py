@@ -92,6 +92,17 @@ def category_post(request):
 	# return HttpResponseRedirect('ledger:categories')
 	return JsonResponse({'messages':{'success':'The Category saved!'}}, safe=False)
 
+def category_edit(request,id):
+	category = get_object_or_404(Category, pk=id)
+	return render(request, 'ledger/category_edit.html', context={"category":category})
+
+def category_edit_post(request):
+	category = get_object_or_404(Category, pk=request.POST['id'])
+	category.name = request.POST['name']
+	category.save()
+	messages.success(request, 'The category has been updated successfully.')
+	return HttpResponseRedirect(reverse('ledger:categories'))
+
 def category_delete(request,id):
 	category = get_object_or_404(Category, pk=id)
 	category.delete()

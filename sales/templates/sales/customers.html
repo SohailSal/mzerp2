@@ -33,7 +33,7 @@
         <td>{{ customer.phone }}</td>
         <td>
           <div class="row row-cols-lg-auto">
-            <a href="/customer_edit/{{customer.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <a href="{% url 'sales:customer_edit' customer.id %}" class="btn btn-outline-secondary btn-sm">Update</a>
             <form action="{% url 'sales:customer_delete' customer.pk %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>

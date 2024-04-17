@@ -44,6 +44,23 @@ def customer_post(request):
 
 	return JsonResponse({'messages':{'success':'The customer saved!'}}, safe=False)
 
+def customer_edit(request,id):
+	customer = get_object_or_404(Customer, pk=id)
+	return render(request, 'sales/customer_edit.html', context={"customer":customer})
+
+def customer_edit_post(request):
+	customer = get_object_or_404(Customer, pk=request.POST['id'])
+	account = get_object_or_404(Account, pk=customer.account.id)
+	customer.name = request.POST['name']
+	customer.email = request.POST['email']
+	customer.phone = request.POST['phone']
+	customer.address = request.POST['address']
+	account.name = request.POST['name']
+	customer.save()
+	account.save()
+	messages.success(request, 'The customer has been updated successfully.')
+	return HttpResponseRedirect(reverse('sales:customers'))
+
 def customer_delete(request,id):
 	customer = get_object_or_404(Customer, pk=id)
 	account = get_object_or_404(Account, pk=customer.account.id)

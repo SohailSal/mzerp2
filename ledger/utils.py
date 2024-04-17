@@ -123,23 +123,23 @@ def tree():
 
 # poe.com generated code
 
-def build_tree(nodes, level=0, current=None):
-    tree = []
-    # levels = ['','├','├-','├--','├---']
-    levels = ['','- ','- - ','- - - ','- - - - ']
-    for node in nodes:
-        if level < 4:
-            current = node
-            tree.append({'id': node.id, 'name': levels[node.level] + node.name})
-            level = level + 1
-            build_tree(nodes, level, current)
+# def build_tree(nodes, level=0, current=None):
+#     tree = []
+#     # levels = ['','├','├-','├--','├---']
+#     levels = ['','- ','- - ','- - - ','- - - - ']
+#     for node in nodes:
+#         if level < 4:
+#             current = node
+#             tree.append({'id': node.id, 'name': levels[node.level] + node.name})
+#             level = level + 1
+#             build_tree(nodes, level, current)
 
-    return tree
+#     return tree
 
-def tree2():
-    nodes = Category.objects.all()
-    tree = build_tree(nodes)
-    return tree
+# def tree2():
+#     nodes = Category.objects.all()
+#     tree = build_tree(nodes)
+#     return tree
 
 def generate_account_number(category):
     chunks = []

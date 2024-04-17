@@ -33,7 +33,7 @@
         <td>{{ category.parent }}</td>
         <td>
           <div class="row row-cols-lg-auto">
-            <a href="/category_edit/{{category.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <a href="{% url 'ledger:category_edit' category.id %}" class="btn btn-outline-secondary btn-sm">Update</a>
             <form action="{% url 'ledger:category_delete' category.id %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
