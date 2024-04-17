@@ -13,7 +13,7 @@ urlpatterns = [
     path('invoice_post', views.invoice_post, name='invoice_post'),
     path('invoice_delete/<int:id>', views.invoice_delete, name='invoice_delete'),
     path('getRate', views.getRate, name='getRate'),
-    path('generate2', utils.generate_invoice_number, name='generate2'),
+    # path('generate2', utils.generate_invoice_number, name='generate2'),
     # path('invoice', utils.invoice, name='invoice'),
     path('invoice/<int:id>', views.invoice, name='invoice'),
 ]

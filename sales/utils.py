@@ -16,19 +16,19 @@ from reportlab.lib import colors
 from num2words import num2words
 from datetime import datetime
 
-def generate_random_number():
-    account_number = ""
+# def generate_random_number():
+#     account_number = ""
     
-    # Generate the first digit (1-9)
-    first_digit = random.randint(1, 9)
-    account_number += str(first_digit)
+#     # Generate the first digit (1-9)
+#     first_digit = random.randint(1, 9)
+#     account_number += str(first_digit)
     
-    # Generate the remaining digits (0-9)
-    for _ in range(9):
-        digit = random.randint(0, 9)
-        account_number += str(digit)
+#     # Generate the remaining digits (0-9)
+#     for _ in range(9):
+#         digit = random.randint(0, 9)
+#         account_number += str(digit)
     
-    return account_number
+#     return account_number
 
 def generate_invoice_number(d):
     chunks = []
