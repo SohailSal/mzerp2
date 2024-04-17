@@ -33,8 +33,8 @@
         <td>{{ item.unit }}</td>
         <td>
           <div class="row row-cols-sm-auto">
-            <a href="/item_edit/{{item.id}}" class="btn btn-outline-secondary btn-sm">Update</a>
-            <form action="{% url 'inventory:item_delete' item.pk %}" method="post" class="">
+            <a href="{% url 'inventory:item_edit' item.id %}" class="btn btn-outline-secondary btn-sm">Update</a>
+            <form action="{% url 'inventory:item_delete' item.id %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
             </form>

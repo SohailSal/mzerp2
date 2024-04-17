@@ -39,6 +39,22 @@ def item_post(request):
 
 	return JsonResponse({'messages':{'success':'The item saved!'}}, safe=False)
 
+def item_edit(request,id):
+	item = get_object_or_404(Item, pk=id)
+	return render(request, 'inventory/item_edit.html', context={"item":item})
+
+def item_edit_post(request):
+	item = get_object_or_404(Item, pk=request.POST['id'])
+	item.name = request.POST['name']
+	item.unit = request.POST['unit']
+	item.description = request.POST['description']
+	item.purchase_rate = request.POST['purchase_rate']
+	item.sale_rate = request.POST['sale_rate']
+	item.quantity = request.POST['quantity']
+	item.save()
+	messages.success(request, 'The item has been updated successfully.')
+	return HttpResponseRedirect(reverse('inventory:items'))
+
 def item_delete(request,id):
 	item = get_object_or_404(Item, pk=id)
 	item.delete()

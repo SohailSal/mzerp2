@@ -1,5 +1,5 @@
 {% extends "base/base.html" %}
-{% block title %} Add Account {% endblock %}
+{% block title %} Edit Account {% endblock %}
 {% block mainhead %} Ledger {% endblock %}
 {% block subhead %} Edit Account {% endblock %}
 {% block content %}
@@ -7,7 +7,13 @@
 <form action="{% url 'ledger:account_edit_post' %}" method="post" class="row gx-3 gy-2 align-items-end" >
 {% csrf_token %}
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% if messages %}
+<div class="alert alert-primary" role="alert">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
 
     <input name="id" value="{{account.id}}" hidden>
     <div class="col-sm-4">

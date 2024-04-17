@@ -135,9 +135,14 @@ def account_edit(request,id):
 def account_edit_post(request):
 	account = get_object_or_404(Account, pk=request.POST['id'])
 	category = get_object_or_404(Category, pk=request.POST['category'])
-	account.name = request.POST['name']
-	account.category = category
-	account.save()
+	if account.category == category:
+		account.name = request.POST['name']
+		account.save()
+	else:
+		account.name = request.POST['name']
+		account.category = category
+		account.account_number = utils.generate_account_number(category)
+		account.save()
 	messages.success(request, 'The account has been updated successfully.')
 	return HttpResponseRedirect(reverse('ledger:accounts'))
 
