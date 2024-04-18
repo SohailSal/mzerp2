@@ -32,6 +32,14 @@
       }
     },
     {
+      "model": "base.setting",
+      "pk": 5,
+      "fields": {
+        "name": "suspense",
+        "value": 3
+      }
+    },
+    {
       "model": "base.year",
       "pk": 1,
       "fields": {

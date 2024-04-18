@@ -129,7 +129,7 @@ def account_post(request):
 	data = json.loads(request.body)
 	name = data['name'] if data['name'] else None
 	category = get_object_or_404(Category, pk=data['category']) if data['category'] else None 
-	balance = data['balance'] if data['balance'] else None
+	balance = int(data['balance']) if data['balance'] else None
 	account_number = utils.generate_account_number(category)
 
 	try:
@@ -137,6 +137,31 @@ def account_post(request):
 			account = Account(name=name, account_number=account_number, category=category, balance=balance)
 			account.full_clean()
 			account.save()
+			if(balance):
+				year_setting = Setting.objects.filter(name__iexact='year').first().value
+				year = get_object_or_404(Year, pk=year_setting)
+				date = year.start_date.strftime("%Y-%m-%d")
+				ref = utils.generate_trans_number(date)
+				document = get_object_or_404(Document, pk=1)
+				suspense_setting = Setting.objects.filter(name__iexact='suspense').first().value
+				suspense = get_object_or_404(Account, pk=suspense_setting)
+				transaction = Transaction(ref=ref, date=date, document=document, year=year, description="Opening Balance")
+				transaction.full_clean()
+				transaction.save()
+				if balance < 0:
+					e1 = Entry(transaction=transaction, account=suspense, debit=abs(balance), credit=0)
+					e2 = Entry(transaction=transaction, account=account, debit=0, credit=abs(balance))
+					e1.full_clean()
+					e2.full_clean()
+					e1.save()
+					e2.save()
+				else:
+					e1 = Entry(transaction=transaction, account=account, debit=balance, credit=0)
+					e2 = Entry(transaction=transaction, account=suspense, debit=0, credit=balance)
+					e1.full_clean()
+					e2.full_clean()
+					e1.save()
+					e2.save()
 	except (ValidationError, DatabaseError) as e:
 		ic(e)
 		return JsonResponse({'errors':e.message_dict}, safe=False)

@@ -101,6 +101,16 @@
     }
   },
   {
+    "model": "ledger.category",
+    "pk": 10,
+    "fields": {
+      "name": "Other Receivables",
+      "category_number": 3,
+      "level": 2,
+      "parent_category": 6
+    }
+  },
+  {
     "model": "ledger.account",
     "pk": 1,
     "fields": {
@@ -118,6 +128,17 @@
         "name": "Cash Sales",
         "account_number": 4001,
         "category": 4,
+        "created_at": "2023-07-01",
+        "updated_at": "2023-07-01"
+    }
+  },
+  {
+    "model": "ledger.account",
+    "pk": 3,
+    "fields": {
+        "name": "Suspense Account",
+        "account_number": 10103001,
+        "category": 10,
         "created_at": "2023-07-01",
         "updated_at": "2023-07-01"
     }
