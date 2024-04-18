@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, FileResponse
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
 import json
@@ -10,12 +11,14 @@ from django.db import DatabaseError
 from icecream import ic
 # from . import utils
 
+@login_required
 def items(request):
 	# request.session['current_url'] = 'inventory/index.html'
 	# request.session['app'] = 'inventory' 
 	items = Item.objects.all()
 	return render(request, 'inventory/items.html', context={'items':items})
 
+@login_required
 def item_add(request):
 	return render(request, 'inventory/item_add.html', context={})
 

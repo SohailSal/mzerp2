@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, FileResponse
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
 import json
@@ -14,10 +15,12 @@ from icecream import ic
 from . import utils
 from ledger import utils as ledger_utils
 
+@login_required
 def customers(request):
 	customers = Customer.objects.order_by('id')
 	return render(request, 'sales/customers.html', context={"customers": customers})
 
+@login_required
 def customer_add(request):
 	return render(request, 'sales/customer_add.html', context={})
 
@@ -69,10 +72,12 @@ def customer_delete(request,id):
 	messages.success(request, 'The customer has been deleted successfully.')
 	return HttpResponseRedirect(reverse('sales:customers'))
 
+@login_required
 def invoices(request):
 	invoices = Invoice.objects.order_by('id')
 	return render(request, 'sales/invoices.html', context={"invoices": invoices})
 
+@login_required
 def invoice_add(request):
 	items = [i.select() for i in Item.objects.all()]
 	customers = [i.select() for i in Customer.objects.all()]

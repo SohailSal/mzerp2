@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
@@ -14,11 +15,12 @@ import decimal
 from . import utils
 
 # Transactions CRUD
-
+@login_required
 def transactions(request):
 	transactions = Transaction.objects.order_by('id')
 	return render(request, 'ledger/transactions.html', context={"transactions": transactions})
 
+@login_required
 def transaction_add(request):
 	accounts = [i.select() for i in Account.objects.all()]
 	return render(request, 'ledger/transaction_add.html', context={"accounts": accounts})
@@ -61,10 +63,12 @@ def transaction_delete(request,id):
 
 # Category CRUD
 
+@login_required
 def categories(request):
 	categories = [i.select() for i in Category.objects.all()]
 	return render(request, 'ledger/categories.html', context={"categories": categories})
 
+@login_required
 def category_add(request):
 	categories = utils.tree()
 	cat = utils.tree2()
@@ -111,10 +115,12 @@ def category_delete(request,id):
 
 # Account CRUD
 
+@login_required
 def accounts(request):
 	accounts = [i.select() for i in Account.objects.filter(customer__isnull=True)]
 	return render(request, 'ledger/accounts.html', context={"accounts": accounts})
 
+@login_required
 def account_add(request):
 	categories = utils.tree()
 	return render(request, 'ledger/account_add.html', context={"categories": categories})

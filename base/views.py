@@ -15,6 +15,7 @@ from ledger import utils
 
 # settings
 
+@login_required
 def settings(request):
     settings = [i.select() for i in Setting.objects.all()]
     accounts = [i.select() for i in Account.objects.all()]
@@ -77,10 +78,12 @@ def settings_save(request):
 
 # years
 
+@login_required
 def years(request):
 	years = Year.objects.all()
 	return render(request, 'base/years.html', context={'years':years})
 
+@login_required
 def year_add(request):
 	return render(request, 'base/year_add.html')
 
@@ -187,6 +190,7 @@ def logout_view(request):
     logout(request)
     return redirect('/home')
 
+@login_required
 def reports(request):
     accounts = [i.select() for i in Account.objects.all()]
     return render(request, 'base/reports.html', context={"accounts": accounts})

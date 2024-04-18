@@ -1,0 +1,98 @@
+[
+    {
+        "model": "ledger.document",
+        "pk": 1,
+        "fields": {
+            "name": "General Journal",
+            "prefix": "JV"
+        }
+      },
+      {
+        "model": "ledger.document",
+        "pk": 2,
+        "fields": {
+            "name": "Invoice",
+            "prefix": "INV"
+        }
+      },
+      {
+      "model": "ledger.category",
+      "pk": 1,
+      "fields": {
+        "name": "Assets",
+        "category_number": 1,
+        "level": 0
+      }
+    },
+    {
+      "model": "ledger.category",
+      "pk": 2,
+      "fields": {
+        "name": "Current Assets",
+        "category_number": 1,
+        "level": 1,
+        "parent_category": 1
+      }
+    },
+    {
+      "model": "ledger.category",
+      "pk": 3,
+      "fields": {
+        "name": "Debtors",
+        "category_number": 1,
+        "level": 2,
+        "parent_category": 2
+      }
+    },
+    {
+      "model": "ledger.category",
+      "pk": 4,
+      "fields": {
+        "name": "Cash and Bank",
+        "category_number": 2,
+        "level": 2,
+        "parent_category": 2
+      }
+    },
+    {
+      "model": "ledger.category",
+      "pk": 5,
+      "fields": {
+        "name": "Cash at Bank",
+        "category_number": 1,
+        "level": 3,
+        "parent_category": 4
+      }
+    },
+    {
+        "model": "ledger.category",
+        "pk": 6,
+        "fields": {
+            "name": "Income",
+            "category_number": 4,
+            "level": 0
+        }
+    },
+    {
+        "model": "ledger.account",
+        "pk": 1,
+        "fields": {
+            "name": "Cash at Bank 1",
+            "account_number": 1010201001,
+            "category": 5,
+            "created_at": "2023-07-01",
+            "updated_at": "2023-07-01"
+        }
+    },
+    {
+        "model": "ledger.account",
+        "pk": 2,
+        "fields": {
+            "name": "Cash Sales",
+            "account_number": 4001,
+            "category": 6,
+            "created_at": "2023-07-01",
+            "updated_at": "2023-07-01"
+        }
+    }
+]
