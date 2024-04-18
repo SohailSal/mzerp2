@@ -112,7 +112,7 @@ def category_delete(request,id):
 # Account CRUD
 
 def accounts(request):
-	accounts = [i.select() for i in Account.objects.all()]
+	accounts = [i.select() for i in Account.objects.filter(customer__isnull=True)]
 	return render(request, 'ledger/accounts.html', context={"accounts": accounts})
 
 def account_add(request):
