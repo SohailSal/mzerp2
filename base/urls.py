@@ -38,4 +38,5 @@ urlpatterns = [
 # reports
     path('reports', views.reports, name='reports'),  
     path('reports_ledger', views.reports_ledger, name='reports_ledger'),
+    path('reports_tb', views.reports_tb, name='reports_tb'),
 ]

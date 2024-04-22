@@ -41,6 +41,22 @@
   </form>
 </div>
 
+<div>
+  <form action="/reports_tb" method="post" class="row gx-3 gy-2 align-items-end">
+    {% csrf_token %}
+
+    <div class="col-sm-3">
+      <label for="end_date" class="form-label">End Date</label>
+      <input type="date" class="form-control form-control-sm" id="end_date" name="end_date">
+    </div>
+
+    <div class="col-auto">
+      <button type="submit" class="btn btn-sm btn-primary ">Submit</button>
+    </div>
+
+  </form>
+</div>
+
 <script>
   new SlimSelect({
     select: '#acc'

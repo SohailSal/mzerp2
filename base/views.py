@@ -203,3 +203,9 @@ def reports_ledger(request):
     entries = [i.ledger() for i in Entry.objects.filter(account=account, transaction__date__range=(start,end))]
     response = utils.generate_report(entries)
     return response
+
+def reports_tb(request):
+    dt = request.POST['end_date']
+    response = utils.generate_tb(dt)
+    return response
+    # return JsonResponse({'date': dt})
