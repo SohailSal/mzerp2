@@ -106,57 +106,17 @@ def generate_tb(dt):
 
     # Retrieve account balances using Django's aggregation
     account_balances = Account.objects.annotate(
-        balance=Sum(float('entry__debit')) - Sum(float('entry__credit'))
-    ).values('name', 'balance')
+        total=Sum(('entry__debit')) - Sum(('entry__credit'))
+    ).values('name', 'total')
 
     # Write account names and balances to the worksheet
     row = 1
     for account in account_balances:
         worksheet.write(row, 0, account['name'])
-        worksheet.write(row, 1, account['balance'], currency_format)
+        worksheet.write(row, 1, account['total'], currency_format)
         row += 1
 
-    # Close the workbook
-
-
-
-
-    # account = get_object_or_404(Account, pk=request.POST['acc'])
-    # entries = [i.ledger() for i in Entry.objects.filter(account=account, transaction__date__range=(start,end))]
-    # Create a new workbook and add a worksheet
-    # Define the column headers
-    # headers = ['Date', 'Ref', 'Description', 'Debit', 'Credit', 'Running Balance']
-
-    # # Write the column headers to the worksheet
-    # for col, header in enumerate(headers):
-    #     worksheet.write(0, col, header)
-
-    # balance = 0
-
-    # format1 = workbook.add_format({'num_format': 'd mmmm yyyy'})
-    # format2 = workbook.add_format({'num_format': '#,##0.00'})
-    # worksheet.set_column(0, 0, 18)
-
-    # for row, data in enumerate(ledger_data, start=1):
-    #     balance += float(data['debit']) - float(data['credit'])
-
-    #     worksheet.write(row, 0, data['date'], format1)
-    #     worksheet.write(row, 1, data['ref'])
-    #     worksheet.write(row, 2, data['description'])
-    #     worksheet.write(row, 3, data['debit'], format2)
-    #     worksheet.write(row, 4, data['credit'], format2)
-    #     worksheet.write(row, 5, balance, format2)
-
-    # total_debit = sum(float(data['debit']) for data in ledger_data)
-    # total_credit = sum(float(data['credit']) for data in ledger_data)
-
-    # worksheet.write(row + 2, 1, 'Totals')
-    # worksheet.write(row + 2, 3, total_debit, format2)
-
-    # worksheet.write(row + 2, 4, total_credit, format2)
-
-    # # Save the workbook
-    # worksheet.autofit()
+    worksheet.autofit()
     workbook.close()
     output.seek(0)
     filename = "tb.xlsx"

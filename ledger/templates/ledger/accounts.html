@@ -34,7 +34,7 @@
         <td>{{ account.category }}</td>
         <td>
           <div class="row row-cols-lg-auto">
-            <a href="{% url 'ledger:report' account.id %}" class="btn btn-outline-secondary btn-sm">PDF</a>
+            <a href="{% url 'ledger:report' account.id %}" class="btn btn-outline-secondary btn-sm">Xlsx</a>
             <a href="{% url 'ledger:account_edit' account.id %}" class="btn btn-outline-secondary btn-sm">Update</a>
             <form action="{% url 'ledger:account_delete' account.id %}" method="post" class="">
               {% csrf_token %}
