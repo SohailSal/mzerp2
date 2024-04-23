@@ -71,8 +71,8 @@ def categories(request):
 @login_required
 def category_add(request):
 	categories = utils.tree()
-	cat = utils.tree2()
-	ic(cat)
+	# cat = utils.tree2()
+	# ic(cat)
 	return render(request, 'ledger/category_add.html', context={"categories": categories})
 
 def category_post(request):

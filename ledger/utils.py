@@ -106,7 +106,7 @@ def generate_tb(dt):
 
     # Retrieve account balances using Django's aggregation
     account_balances = Account.objects.annotate(
-        total=Sum(('entry__debit')) - Sum(('entry__credit'))
+        total=Sum('entry__debit') - Sum('entry__credit')
     ).values('name', 'total')
 
     # Write account names and balances to the worksheet
@@ -159,58 +159,47 @@ def generate_chart_accounts():
     return response
 
 
-def tree():
-#    all = [i.select() for i in Category.objects.all()]
-    all = Category.objects.all()
-    sorted = []
-    # levels = ['','├','├-','├--','├---']
-    levels = ['','- ','- - ','- - - ','- - - - ']
-    for node0 in all:
-        if node0.level == 0:
-            current0 = node0
-            sorted.append({'id':node0.id,'name':levels[node0.level]+node0.name})
-            for node1 in all:
-                if node1.level == 1 and node1.parent_category == current0:
-                    current1 = node1
-                    sorted.append({'id':node1.id,'name':levels[node1.level]+node1.name})
-                    for node2 in all:
-                        if node2.level == 2 and node2.parent_category == current1:
-                            current2 = node2
-                            sorted.append({'id':node2.id,'name':levels[node2.level]+node2.name})
-                            for node3 in all:
-                                if node3.level == 3 and node3.parent_category == current2:
-                                    current3 = node3
-                                    sorted.append({'id':node3.id,'name':levels[node3.level]+node3.name})
-                                    for node4 in all:
-                                        if node4.level == 4 and node4.parent_category == current3:
-                                            current4 = node4
-                                            sorted.append({'id':node4.id,'name':levels[node4.level]+node4.name})
-
-
-    level0 = [i.select() for i in Category.objects.filter(level=0)]
-    level1 = [i.select() for i in Category.objects.filter(level=1)]
-    level2 = [i.select() for i in Category.objects.filter(level=2)]
-    return sorted
-
-# poe.com generated code
-
-# def build_tree(nodes, level=0, current=None):
-#     tree = []
-#     # levels = ['','├','├-','├--','├---']
+# def tree():
+#     all = Category.objects.all()
+#     sorted = []
 #     levels = ['','- ','- - ','- - - ','- - - - ']
-#     for node in nodes:
-#         if level < 4:
-#             current = node
-#             tree.append({'id': node.id, 'name': levels[node.level] + node.name})
-#             level = level + 1
-#             build_tree(nodes, level, current)
+#     for node0 in all:
+#         if node0.level == 0:
+#             current0 = node0
+#             sorted.append({'id':node0.id,'name':levels[node0.level]+node0.name})
+#             for node1 in all:
+#                 if node1.level == 1 and node1.parent_category == current0:
+#                     current1 = node1
+#                     sorted.append({'id':node1.id,'name':levels[node1.level]+node1.name})
+#                     for node2 in all:
+#                         if node2.level == 2 and node2.parent_category == current1:
+#                             current2 = node2
+#                             sorted.append({'id':node2.id,'name':levels[node2.level]+node2.name})
+#                             for node3 in all:
+#                                 if node3.level == 3 and node3.parent_category == current2:
+#                                     current3 = node3
+#                                     sorted.append({'id':node3.id,'name':levels[node3.level]+node3.name})
+#                                     for node4 in all:
+#                                         if node4.level == 4 and node4.parent_category == current3:
+#                                             current4 = node4
+#                                             sorted.append({'id':node4.id,'name':levels[node4.level]+node4.name})
+#     return sorted
 
-#     return tree
+def tree():
+    categories = Category.objects.all()
+    sorted_categories = []
 
-# def tree2():
-#     nodes = Category.objects.all()
-#     tree = build_tree(nodes)
-#     return tree
+    def build_tree(category, level):
+        sorted_categories.append({'id': category.id, 'name': '- ' * level + ' ' + category.name})
+        children = categories.filter(parent_category=category)
+        for child in children:
+            build_tree(child, level + 1)
+
+    root_categories = categories.filter(level=0)
+    for root_category in root_categories:
+        build_tree(root_category, 0)
+
+    return sorted_categories
 
 def generate_account_number(category):
     chunks = []
