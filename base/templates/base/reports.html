@@ -11,7 +11,7 @@
         </div>
     {% endfor %}
 {% endif %}
-
+<h5>Ledger</h5>
 <div>
   <form action="/reports_ledger" method="post" class="row gx-3 gy-2 align-items-end">
     {% csrf_token %}
@@ -40,7 +40,8 @@
 
   </form>
 </div>
-
+<br>
+<h5>Trial Balance</h5>
 <div>
   <form action="/reports_tb" method="post" class="row gx-3 gy-2 align-items-end">
     {% csrf_token %}
@@ -52,6 +53,18 @@
 
     <div class="col-auto">
       <button type="submit" class="btn btn-sm btn-primary ">Submit</button>
+    </div>
+
+  </form>
+</div>
+<br>
+<h5>Chart of Accounts</h5>
+<div>
+  <form action="/reports_chart_accounts" method="post" class="row gx-3 gy-2 align-items-end">
+    {% csrf_token %}
+
+    <div class="col-auto">
+      <button type="submit" class="btn btn-sm btn-primary ">Chart of Accounts</button>
     </div>
 
   </form>

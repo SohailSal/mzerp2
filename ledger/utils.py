@@ -127,6 +127,38 @@ def generate_tb(dt):
     response["Content-Disposition"] = "attachment; filename=%s" % filename
     return response
 
+def generate_chart_accounts():
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet('coa')
+
+    bold_format = workbook.add_format({'bold': True})
+
+    worksheet.write('A1', 'Number', bold_format)
+    worksheet.write('B1', 'Account', bold_format)
+    worksheet.write('C1', 'Category', bold_format)
+
+    accounts = Account.objects.all()
+
+    row = 1
+    for account in accounts:
+        worksheet.write(row, 0, account.account_number)
+        worksheet.write(row, 1, account.name)
+        worksheet.write(row, 2, account.category.name)
+        row += 1
+
+    worksheet.autofit()
+    workbook.close()
+    output.seek(0)
+    filename = "coa.xlsx"
+    response = HttpResponse(
+        output,
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
+    return response
+
+
 def tree():
 #    all = [i.select() for i in Category.objects.all()]
     all = Category.objects.all()

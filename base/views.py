@@ -213,3 +213,7 @@ def reports_tb(request):
     response = utils.generate_tb(dt)
     return response
     # return JsonResponse({'date': dt})
+
+def reports_chart_accounts(request):
+    response = utils.generate_chart_accounts()
+    return response
