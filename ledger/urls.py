@@ -20,9 +20,5 @@ urlpatterns = [
     path('account_edit/<int:id>', views.account_edit, name='account_edit'),
     path('account_edit_post', views.account_edit_post, name='account_edit_post'),
     path('account_delete/<int:id>', views.account_delete, name='account_delete'),
-    # path('generate', utils.generate_account_number, name='generate'),
-    # path('sample_post', views.sample_post, name='sample_post'),
-#    path('edit/<int:id>', views.transaction_edit, name='transaction_edit'),
-#    path('transaction_edit_post', views.transaction_edit_post, name='transaction_edit_post'),
     path('report/<int:id>', views.report, name='report'),
 ]

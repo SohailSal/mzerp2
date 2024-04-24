@@ -194,15 +194,6 @@ def account_delete(request,id):
 	messages.success(request, 'The account has been deleted successfully.')
 	return HttpResponseRedirect(reverse('ledger:accounts'))
 
-
-# def sample_post(request):
-#     data = json.loads(request.body)
-#     print(data['hello'])
-#     print(data['entries'])
-#     for x in data['entries']:
-#     	print(x['account'])
-#     return JsonResponse({'status': 'success'})
-
 def report(request,id):
 	account = get_object_or_404(Account, pk=id)
 	entries = [i.ledger() for i in Entry.objects.filter(account=account)]

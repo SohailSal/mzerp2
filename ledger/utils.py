@@ -24,34 +24,9 @@ def generate_report(ledger_data):
     for col, header in enumerate(headers):
         worksheet.write(0, col, header)
 
-    # Sample data for the ledger
-    # ledger_data = [
-    #     ['2024-01-01', 'JV/001', 'Sales', 1000, 0],
-    #     ['2024-01-05', 'JV/002', 'Purchase', 0, 500],
-    #     ['2024-01-10', 'JV/003', 'Salary', 0, 200],
-    #     ['2024-01-15', 'JV/004', 'Rent', 500, 0],
-    # ]
-
-    # Starting balance
     balance = 0
 
-    # Write the ledger data to the worksheet
-    # for row, data in enumerate(ledger_data, start=1):
-    #     date, ref, description, debit, credit = data
-    #     balance += float(debit) - float(credit)
-
-    #     worksheet.write(row, 0, date)
-    #     worksheet.write(row, 1, ref)
-    #     worksheet.write(row, 2, description)
-    #     worksheet.write(row, 3, debit)
-    #     worksheet.write(row, 4, credit)
-    #     worksheet.write(row, 5, balance)
-
-    # # Write the summary
-    # total_debit = sum(data[3] for data in ledger_data)
-    # total_credit = sum(data[4] for data in ledger_data)
     format1 = workbook.add_format({'num_format': 'd mmmm yyyy'})
-    # format1.set_num_format('d mmmm yyyy')
     format2 = workbook.add_format({'num_format': '#,##0.00'})
     worksheet.set_column(0, 0, 18)
 
@@ -65,7 +40,7 @@ def generate_report(ledger_data):
         worksheet.write(row, 4, data['credit'], format2)
         worksheet.write(row, 5, balance, format2)
 
-    # Write the summary
+    # Write the totals
     total_debit = sum(float(data['debit']) for data in ledger_data)
     total_credit = sum(float(data['credit']) for data in ledger_data)
 
@@ -74,7 +49,6 @@ def generate_report(ledger_data):
     worksheet.write(row + 2, 1, 'Totals')
     worksheet.write(row + 2, 3, total_debit, format2)
 
-    # worksheet.write(row + 3, 1, 'Total Credit')
     worksheet.write(row + 2, 4, total_credit, format2)
 
     # Save the workbook
