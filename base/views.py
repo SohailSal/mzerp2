@@ -119,7 +119,11 @@ def login(request):
             return redirect('/login')
         else:
             auth_login(request, user)
-            return redirect('/dashboard')
+            next_url = request.GET.get("next")
+            if next_url:
+                 return redirect(next_url)
+            else:
+                 return redirect('/dashboard')
      
     return render(request, 'base/login.html')
  
