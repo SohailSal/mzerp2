@@ -4,6 +4,7 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from .models import Category, Transaction, Document, Account, Entry
+from base.models import Setting, Year
 from icecream import ic
 from datetime import datetime
 
@@ -75,20 +76,55 @@ def generate_tb(dt):
     currency_format = workbook.add_format({'num_format': '#,##0.00'})
 
     # Write the headers
-    worksheet.write('A1', 'Account', bold_format)
-    worksheet.write('B1', 'Balance', bold_format)
+    worksheet.write('A1', 'Category', bold_format)
+    worksheet.write('B1', 'Account', bold_format)
+    worksheet.write('C1', 'Debit', bold_format)
+    worksheet.write('D1', 'Credit', bold_format)
 
     # Retrieve account balances using Django's aggregation
-    account_balances = Account.objects.annotate(
+
+    year_setting = Setting.objects.filter(name__iexact='year').first().value
+    year = get_object_or_404(Year, pk=year_setting)
+    start_dt = year.start_date.strftime("%Y-%m-%d")
+    # ic(start_dt)
+    # ic(dt)
+    account_balances = Account.objects.filter(
+        entry__transaction__date__range=(start_dt, dt)
+    ).annotate(
         total=Sum('entry__debit') - Sum('entry__credit')
     ).values('name', 'total')
 
     # Write account names and balances to the worksheet
+
+    categories = tree()
+
     row = 1
-    for account in account_balances:
-        worksheet.write(row, 0, account['name'])
-        worksheet.write(row, 1, account['total'], currency_format)
+    total_debit = 0
+    total_credit = 0
+    for category in categories:
+        # ic(category["id"])
+        cat = get_object_or_404(Category, pk=category["id"])
+        # ic(cat)
+        accounts = account_balances.filter(category=cat)
         row += 1
+        worksheet.write(row, 0, category["name"])
+    # row = 1
+        for account in accounts:
+            worksheet.write(row, 1, account['name'])
+            if account['total'] >= 0:
+                worksheet.write(row, 2, account['total'], currency_format)
+                total_debit = total_debit + account['total']
+            else:
+                worksheet.write(row, 3, abs(account['total']), currency_format)
+                total_credit = total_credit + abs(account['total'])
+            # worksheet.write(row, 2, account['category'])
+            # worksheet.write(row, 3, account['id'])
+            row += 1
+
+    worksheet.write(row + 2, 1, 'Totals')
+    worksheet.write(row + 2, 2, total_debit, currency_format)
+    worksheet.write(row + 2, 3, total_credit, currency_format)
+
 
     worksheet.autofit()
     workbook.close()
@@ -108,18 +144,23 @@ def generate_chart_accounts():
 
     bold_format = workbook.add_format({'bold': True})
 
-    worksheet.write('A1', 'Number', bold_format)
-    worksheet.write('B1', 'Account', bold_format)
-    worksheet.write('C1', 'Category', bold_format)
+    worksheet.write('A1', 'Category', bold_format)
+    worksheet.write('B1', 'Number', bold_format)
+    worksheet.write('C1', 'Account', bold_format)
 
-    accounts = Account.objects.all()
+    categories = tree()
 
     row = 1
-    for account in accounts:
-        worksheet.write(row, 0, account.account_number)
-        worksheet.write(row, 1, account.name)
-        worksheet.write(row, 2, account.category.name)
+    for category in categories:
+        cat = get_object_or_404(Category, pk=category["id"])
+        accounts = Account.objects.filter(category=cat)
         row += 1
+        worksheet.write(row, 0, category["name"])
+        for account in accounts:
+            worksheet.write(row, 1, account.account_number)
+            worksheet.write(row, 2, account.name)
+            # worksheet.write(row, 3, account.category.name)
+            row += 1
 
     worksheet.autofit()
     workbook.close()

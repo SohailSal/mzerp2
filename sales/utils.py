@@ -16,20 +16,6 @@ from reportlab.lib import colors
 from num2words import num2words
 from datetime import datetime
 
-# def generate_random_number():
-#     account_number = ""
-    
-#     # Generate the first digit (1-9)
-#     first_digit = random.randint(1, 9)
-#     account_number += str(first_digit)
-    
-#     # Generate the remaining digits (0-9)
-#     for _ in range(9):
-#         digit = random.randint(0, 9)
-#         account_number += str(digit)
-    
-#     return account_number
-
 def generate_invoice_number(d):
     chunks = []
     document = get_object_or_404(Document, pk=2)
@@ -61,10 +47,6 @@ def generate_invoice(id):
     company_name = "Muniff Ziauddin & Co."
     company_address = "F/17/3, Executive Centre"
     company_contact = "Phone: xxx-xxx-xxxx, Email: info@mzco.com.pk"
-    oldproducts = [
-		{"name": "Prod 1", "quantity": 2, "price": 10.00, "discount": 10},
-		{"name": "Prod 2", "quantity": 1, "price": 25.00, "discount": 5},
-	]
 
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=letter)
@@ -90,49 +72,17 @@ def generate_invoice(id):
     data.extend([[Paragraph(p["name"], normal), Paragraph(str(p["quantity"]), normal), Paragraph(f"Rs.{p['price']:.2f}", data_style), Paragraph(f"{p['discount']}%", data_style), Paragraph(f"Rs.{p['quantity'] * p['price'] * (1 - p['discount']/100):.2f}", data_style)] for p in products])
 
     table = Table(data, colWidths=[100, 100, 70, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
-    table.wrapOn(c, 100, 520)
-    table.drawOn(c, 100, 520)
-
-
-    data2 = [
-    ["Letter", "Number", "Stuff", "Long stuff that should be wrapped"],
-    ["A", "01", "ABCD", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"],
-    ["B", "02", "CDEF", "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"],
-    ["C", "03", "SDFSDF", "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"],
-    ["D", "04", "SDFSDF", "DDDDDDDDDDDDDDDDDDDDDDDD DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"],
-    ["E", "05", "GHJGHJGHJ", "EEEEEEEEEEEEEE EEEEEEEEEEEEEEEEE EEEEEEEEEEEEEEEEEEEE"],
-    ]
-
-    #TODO: Get this line right instead of just copying it from the docs
-    style = TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
-                        ('TEXTCOLOR',(1,1),(-2,-2),colors.red),
-                        ('VALIGN',(0,0),(0,-1),'TOP'),
-                        # ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
-                        # ('ALIGN',(0,-1),(-1,-1),'CENTER'),
-                        # ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
-                        # ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
-                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                        ('BOX', (0,0), (-1,-1), 0.5, colors.black),
-                        ])
-    s = styles["BodyText"]
-    s.wordWrap = 'CJK'
-    # data3 = [data2]
-    data3 = [[Paragraph("Product", s), Paragraph("Quantity", s), Paragraph("Price", s), Paragraph("Discount", s)]]
-    data3.extend([[Paragraph(cell,s) for cell in row] for row in data2])
-    # data3 = [[Paragraph(cell) for cell in row] for row in data2]
-    t=Table(data3, colWidths=[100, 100, 70, 200, 100])
-    t.setStyle(style)
-    t.wrapOn(c, 100, 250)
-    t.drawOn(c, 100, 250)
-
+    table.wrapOn(c, 50, 520)
+    table.drawOn(c, 50, 520)
 
 	# Calculate total amount
     total_amount = sum([p["quantity"] * p["price"] * (1 - p["discount"]/100) for p in products])
 
 	# Add total amount
-    c.drawString(30, 170, "Total Amount:")
-    c.drawString(540, 170, f"Rs.{total_amount:.2f}")
-    c.drawString(30, 150, num2words(f"{total_amount:.2f}"))
+    c.drawString(50, 370, "Total Amount:")
+    c.drawString(450, 370, f"Rs.{total_amount:.2f}")
+    c.drawString(50, 350, "Rupees")
+    c.drawString(100, 350, num2words(f"{total_amount:.2f}"))
 
     c.showPage()
     c.save()
