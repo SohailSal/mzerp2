@@ -23,7 +23,11 @@ def transactions(request):
 @login_required
 def transaction_add(request):
 	accounts = [i.select() for i in Account.objects.all()]
-	return render(request, 'ledger/transaction_add.html', context={"accounts": accounts})
+	year_setting = Setting.objects.filter(name__iexact='year').first().value
+	year = get_object_or_404(Year, pk=year_setting)
+	start_date = year.start_date.strftime("%Y-%m-%d")
+	end_date = year.end_date.strftime("%Y-%m-%d")
+	return render(request, 'ledger/transaction_add.html', context={"accounts":accounts, "start_date":start_date, "end_date":end_date})
 
 def transaction_post(request):
 	data = json.loads(request.body)

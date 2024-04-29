@@ -81,7 +81,11 @@ def invoices(request):
 def invoice_add(request):
 	items = [i.select() for i in Item.objects.all()]
 	customers = [i.select() for i in Customer.objects.all()]
-	return render(request, 'sales/invoice_add.html', context={'items':items,'customers':customers})
+	year_setting = Setting.objects.filter(name__iexact='year').first().value
+	year = get_object_or_404(Year, pk=year_setting)
+	start_date = year.start_date.strftime("%Y-%m-%d")
+	end_date = year.end_date.strftime("%Y-%m-%d")
+	return render(request, 'sales/invoice_add.html', context={'items':items,'customers':customers, "start_date":start_date, "end_date":end_date})
 
 def invoice_post(request):
 	data = json.loads(request.body)

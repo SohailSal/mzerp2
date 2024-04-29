@@ -18,11 +18,11 @@
 
     <div class="col-sm-3">
       <label for="start_date" class="form-label">Start Date</label>
-      <input type="date" class="form-control form-control-sm" id="start_date" name="start_date" required>
+      <input type="date" class="form-control form-control-sm" id="start_date" name="start_date"  min="{{start_date}}" max="{{end_date}}" value="{{start_date}}" required>
     </div>
     <div class="col-sm-3">
       <label for="end_date" class="form-label">End Date</label>
-      <input type="date" class="form-control form-control-sm" id="end_date" name="end_date" required>
+      <input type="date" class="form-control form-control-sm" id="end_date" name="end_date"  min="{{start_date}}" max="{{end_date}}" value="{{end_date}}" required>
     </div>
 
     <div class="col-sm-3">
@@ -48,7 +48,7 @@
 
     <div class="col-sm-3">
       <label for="end_date" class="form-label">End Date</label>
-      <input type="date" class="form-control form-control-sm" id="end_date" name="end_date" required>
+      <input type="date" class="form-control form-control-sm" id="end_date" name="end_date"  min="{{start_date}}" max="{{end_date}}" value="{{end_date}}" required>
     </div>
 
     <div class="col-auto">

@@ -161,7 +161,11 @@ def logout_view(request):
 @login_required
 def reports(request):
     accounts = [i.select() for i in Account.objects.all()]
-    return render(request, 'base/reports.html', context={"accounts": accounts})
+    year_setting = Setting.objects.filter(name__iexact='year').first().value
+    year = get_object_or_404(Year, pk=year_setting)
+    start_date = year.start_date.strftime("%Y-%m-%d")
+    end_date = year.end_date.strftime("%Y-%m-%d")
+    return render(request, 'base/reports.html', context={"accounts": accounts, "start_date":start_date, "end_date":end_date})
 
 def reports_ledger(request):
     start = request.POST['start_date']

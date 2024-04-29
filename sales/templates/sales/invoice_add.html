@@ -36,7 +36,7 @@
       </div>
       <div class="col-md-4">
         <label for="invoice_date" class="form-label">Invoice Date</label>
-        <input type="date" x-model="invoice_date" class="form-control form-control-sm" id="invoice_date">
+        <input type="date" x-model="invoice_date" class="form-control form-control-sm" id="invoice_date" min="{{start_date}}" max="{{end_date}}">
       </div>
       <div class="col-md-4">
         <label for="customer" class="form-label">Customer</label>
@@ -106,7 +106,7 @@
   return {
       messages: '',
       errors: '',
-      invoice_date: '',
+      invoice_date: '{{start_date}}',
       customer: '',
       description: '',
       formLoading: false,

@@ -4,7 +4,7 @@
 {% block subhead %} Add Year {% endblock %}
 {% block content %}
 
-<form action="/year_post" method="post">
+<form action="/year_post" method="post" class="row gx-3 gy-2 align-items-end" >
 {% csrf_token %}
 
 {% if errors %}
@@ -15,10 +15,13 @@
     {% endfor %}
 {% endif %}
 
-Year:<br>
-<input name="year" value="{% if year %}{{year}}{% endif %}">
-<br><br>
-<input type="submit" value="Submit">
+    <div class="col-md-2">
+        <label for="year" class="form-label">Year</label>
+        <input type="text" class="form-control form-control-sm" id="year" name="year">
+    </div>
+    <div class="col-md-2">
+        <input type="submit" class="btn btn-sm btn-primary" value="Add">
+    </div>
 </form>
 
 {% endblock %}
