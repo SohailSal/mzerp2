@@ -1,1 +1,3 @@
-MZERP2 is the accounting software being developed by Digital Solutions Department of Muniff Ziauddin & Co. Chartered Accountants. This is the base repository where key blocks of the accounting software are being developed. This will form the foundation of customized business solutions we're posed to deliver to our clientele. The technology stack comprise of Django (Python), Bootstrap and AlpineJS. We can be contacted through dsd@mzco.com.pk
+MZERP2 is the accounting software being developed by Digital Solutions Department of Muniff Ziauddin & Co. Chartered Accountants. This is the base repository where key blocks of the accounting software are being developed. This will form the foundation of customized business solutions we're posed to deliver to our clientele. The technology stack comprise of Django (Python), Bootstrap and AlpineJS. 
+See INSTALL.md for installation instructions.
+We can be contacted through dsd@mzco.com.pk
