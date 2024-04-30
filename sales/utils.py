@@ -19,12 +19,10 @@ from datetime import datetime
 def generate_invoice_number(d):
     chunks = []
     document = get_object_or_404(Document, pk=2)
-    # d = date.today()
     prefix = document.prefix
     dt = datetime.strptime(d,'%Y-%m-%d')
     year = dt.strftime("%Y")
     month = dt.strftime("%m")
-    # counter = '1' if Invoice.objects.count() == 0 else str(int(Invoice.objects.last().invoice_number[-3:])+1)
     counter = '1' if Invoice.objects.count() == 0 else str(int(Invoice.objects.last().invoice_number.split('/')[-1])+1)
     chunks.append(prefix+'/')
     chunks.append(year+'/')
@@ -58,31 +56,43 @@ def generate_invoice(id):
     subheading_style = ParagraphStyle(name="Subheading", fontSize=12)
     data_style = ParagraphStyle(name="Data", fontSize=10)
 
-    c.drawString(30, 750, company_name)
-    c.drawString(30, 730, company_address)
-    c.drawString(30, 710, company_contact)
-    c.drawString(300, 750, "Bill To:")
-    c.drawString(300, 730, invoice.customer.name)
-    c.drawString(300, 710, invoice.customer.address)
-    c.drawString(30, 680, f"Invoice Number: {invoice.invoice_number}")
-    c.drawString(30, 660, f"Invoice Date: {invoice.invoice_date}")
+    h = 800
+    h = h-50
+    c.drawString(30, h, company_name)
+    c.drawString(300, h, "Bill To:")
+    h = h-20
+    c.drawString(30, h, company_address)
+    c.drawString(300, h, invoice.customer.name)
+    h = h-20
+    c.drawString(30, h, company_contact)
+    c.drawString(300, h, invoice.customer.address)
+    h = h-30
+    c.drawString(30, h, f"Invoice Number: {invoice.invoice_number}")
+    h = h-20
+    c.drawString(30, h, f"Invoice Date: {invoice.invoice_date}")
 
 	# Create product table
     data = [[Paragraph("Product", heading_style), Paragraph("Quantity", heading_style), Paragraph("Price", heading_style), Paragraph("Discount", heading_style), Paragraph("Amount", heading_style)]]
     data.extend([[Paragraph(p["name"], normal), Paragraph(str(p["quantity"]), normal), Paragraph(f"Rs.{p['price']:.2f}", data_style), Paragraph(f"{p['discount']}%", data_style), Paragraph(f"Rs.{p['quantity'] * p['price'] * (1 - p['discount']/100):.2f}", data_style)] for p in products])
 
     table = Table(data, colWidths=[100, 100, 70, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
-    table.wrapOn(c, 50, 520)
-    table.drawOn(c, 50, 520)
+
+    cnt = len(products)
+    th = cnt*20 + 50
+    h = h - th
+    table.wrapOn(c, 50, h)
+    table.drawOn(c, 50, h)
 
 	# Calculate total amount
     total_amount = sum([p["quantity"] * p["price"] * (1 - p["discount"]/100) for p in products])
 
 	# Add total amount
-    c.drawString(50, 370, "Total Amount:")
-    c.drawString(450, 370, f"Rs.{total_amount:.2f}")
-    c.drawString(50, 350, "Rupees")
-    c.drawString(100, 350, num2words(f"{total_amount:.2f}"))
+    h = h - 30
+    c.drawString(50, h, "Total Amount:")
+    c.drawString(400, h, f"Rs.{total_amount:.2f}")
+    h = h - 20
+    c.drawString(50, h, "Rupees")
+    c.drawString(100, h, num2words(f"{total_amount:.2f}"))
 
     c.showPage()
     c.save()
