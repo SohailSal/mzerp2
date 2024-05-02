@@ -75,7 +75,7 @@ def generate_invoice(id):
     data = [[Paragraph("PRODUCT", heading_style), Paragraph("QUANTITY", heading_style), Paragraph("PRICE", heading_style), Paragraph("AMOUNT", heading_style)]]
     data.extend([[Paragraph(p["name"], data_style), Paragraph(str(p["quantity"]), data_style), Paragraph(f"Rs.{p['price']:.2f}", data_style), Paragraph(f"Rs.{p['quantity'] * p['price']:.2f}", data_style)] for p in products])
 
-    table = Table(data, colWidths=[100, 100, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
+    table = Table(data, colWidths=[100, 100, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('LINEABOVE',(1,0),(-1,2),1,colors.blue), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
 
     cnt = len(products)
     th = cnt*20 + 50
