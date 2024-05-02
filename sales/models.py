@@ -46,5 +46,4 @@ class InvoiceItem(models.Model):
             'name': self.item.name,
             'quantity': float(self.quantity),
             'price': float(self.rate),
-            'discount': float(10.0),
         }

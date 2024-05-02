@@ -51,8 +51,8 @@ def generate_invoice(id):
 
 	# Define styles
     styles = getSampleStyleSheet()
-    normal = styles["h3"]
-    heading_style = ParagraphStyle(name="Heading", fontSize=16, bold=True)
+    heading3 = styles["h3"]
+    heading_style = ParagraphStyle(name="Heading", fontSize=12, bold=True)
     subheading_style = ParagraphStyle(name="Subheading", fontSize=12)
     data_style = ParagraphStyle(name="Data", fontSize=10)
 
@@ -72,10 +72,10 @@ def generate_invoice(id):
     c.drawString(30, h, f"Invoice Date: {invoice.invoice_date}")
 
 	# Create product table
-    data = [[Paragraph("Product", heading_style), Paragraph("Quantity", heading_style), Paragraph("Price", heading_style), Paragraph("Discount", heading_style), Paragraph("Amount", heading_style)]]
-    data.extend([[Paragraph(p["name"], normal), Paragraph(str(p["quantity"]), normal), Paragraph(f"Rs.{p['price']:.2f}", data_style), Paragraph(f"{p['discount']}%", data_style), Paragraph(f"Rs.{p['quantity'] * p['price'] * (1 - p['discount']/100):.2f}", data_style)] for p in products])
+    data = [[Paragraph("PRODUCT", heading_style), Paragraph("QUANTITY", heading_style), Paragraph("PRICE", heading_style), Paragraph("AMOUNT", heading_style)]]
+    data.extend([[Paragraph(p["name"], data_style), Paragraph(str(p["quantity"]), data_style), Paragraph(f"Rs.{p['price']:.2f}", data_style), Paragraph(f"Rs.{p['quantity'] * p['price']:.2f}", data_style)] for p in products])
 
-    table = Table(data, colWidths=[100, 100, 70, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
+    table = Table(data, colWidths=[100, 100, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
 
     cnt = len(products)
     th = cnt*20 + 50
@@ -84,12 +84,12 @@ def generate_invoice(id):
     table.drawOn(c, 50, h)
 
 	# Calculate total amount
-    total_amount = sum([p["quantity"] * p["price"] * (1 - p["discount"]/100) for p in products])
+    total_amount = sum([p["quantity"] * p["price"] for p in products])
 
 	# Add total amount
     h = h - 30
     c.drawString(50, h, "Total Amount:")
-    c.drawString(400, h, f"Rs.{total_amount:.2f}")
+    c.drawString(350, h, f"Rs.{total_amount:.2f}")
     h = h - 20
     c.drawString(50, h, "Rupees")
     c.drawString(100, h, num2words(f"{total_amount:.2f}"))
