@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.enums import TA_JUSTIFY
+from reportlab.lib.enums import TA_JUSTIFY, TA_RIGHT
 from reportlab.lib.units import inch
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -55,6 +55,7 @@ def generate_invoice(id):
     heading_style = ParagraphStyle(name="Heading", fontSize=12, bold=True)
     subheading_style = ParagraphStyle(name="Subheading", fontSize=12)
     data_style = ParagraphStyle(name="Data", fontSize=10)
+    amount_style = ParagraphStyle(name="amount", fontSize=10, alignment=TA_RIGHT)
 
     h = 800
     h = h-50
@@ -70,14 +71,14 @@ def generate_invoice(id):
     c.drawString(30, h, f"Invoice Number: {invoice.invoice_number}")
     h = h-20
     c.drawString(30, h, f"Invoice Date: {invoice.invoice_date}")
+    cnt = len(products)
 
 	# Create product table
-    data = [[Paragraph("PRODUCT", heading_style), Paragraph("QUANTITY", heading_style), Paragraph("PRICE", heading_style), Paragraph("AMOUNT", heading_style)]]
-    data.extend([[Paragraph(p["name"], data_style), Paragraph(str(p["quantity"]), data_style), Paragraph(f"Rs.{p['price']:.2f}", data_style), Paragraph(f"Rs.{p['quantity'] * p['price']:.2f}", data_style)] for p in products])
+    data = [[Paragraph("PRODUCT", heading_style), Paragraph("QUANTITY", heading_style), Paragraph("PRICE (Rs.)", heading_style), Paragraph("AMOUNT (Rs.)", heading_style)]]
+    data.extend([[Paragraph(p["name"], data_style), Paragraph(str(p["quantity"]), data_style), Paragraph(f"{p['price']:.2f}", amount_style), Paragraph(f"{p['quantity'] * p['price']:.2f}", amount_style)] for p in products])
 
-    table = Table(data, colWidths=[100, 100, 100, 100], style=[('ALIGN', (0, 0), (-1, -1), 'LEFT'), ('LINEABOVE',(1,0),(-1,2),1,colors.blue), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')])
+    table = Table(data, colWidths=[100, 100, 100, 100], style=[('LINEABOVE',(0,1),(3,1),1,colors.black), ('LINEBEFORE',(3,1),(3,cnt),1,colors.black)])
 
-    cnt = len(products)
     th = cnt*20 + 50
     h = h - th
     table.wrapOn(c, 50, h)
@@ -92,7 +93,7 @@ def generate_invoice(id):
     c.drawString(350, h, f"Rs.{total_amount:.2f}")
     h = h - 20
     c.drawString(50, h, "Rupees")
-    c.drawString(100, h, num2words(f"{total_amount:.2f}"))
+    c.drawString(95, h, num2words(f"{total_amount:.2f}") + " only.")
 
     c.showPage()
     c.save()
