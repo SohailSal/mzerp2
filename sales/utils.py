@@ -77,21 +77,17 @@ def generate_invoice(id):
     data = [[Paragraph("PRODUCT", heading_style), Paragraph("QUANTITY", heading_style), Paragraph("PRICE (Rs.)", heading_style), Paragraph("AMOUNT (Rs.)", heading_style)]]
     data.extend([[Paragraph(p["name"], data_style), Paragraph(str(p["quantity"]), data_style), Paragraph(f"{p['price']:.2f}", amount_style), Paragraph(f"{p['quantity'] * p['price']:0,.2f}", amount_style)] for p in products])
 
-    table = Table(data, colWidths=[100, 100, 100, 100], style=[('LINEABOVE',(0,1),(3,1),1,colors.black), ('LINEBEFORE',(3,1),(3,cnt),1,colors.black)])
+    total_amount = sum([p["quantity"] * p["price"] for p in products])
+    data.extend([[Paragraph("Total Amount", data_style), Paragraph(""), Paragraph(""), Paragraph(f"Rs.{total_amount:0,.2f}", amount_style)]])
 
-    th = cnt*20 + 50
+    table = Table(data, colWidths=[100, 100, 100, 100], style=[('LINEABOVE',(0,1),(3,1),1,colors.black), ('LINEBEFORE',(3,1),(3,cnt),1,colors.black), ('LINEAFTER',(3,1),(3,cnt),1,colors.black), ('LINEABOVE',(-1,-1),(-1,-1),1,colors.black), ('LINEBELOW',(-1,-1),(-1,-1),1,colors.black,0,None,None,2,2)])
+
+    th = cnt*20 + 70
     h = h - th
     table.wrapOn(c, 50, h)
     table.drawOn(c, 50, h)
 
-	# Calculate total amount
-    total_amount = sum([p["quantity"] * p["price"] for p in products])
-
-	# Add total amount
     h = h - 30
-    c.drawString(50, h, "Total Amount:")
-    c.drawString(350, h, f"Rs.{total_amount:0,.2f}")
-    h = h - 20
     c.drawString(50, h, "Rupees")
     c.drawString(95, h, num2words(f"{total_amount:.2f}") + " only.")
 
