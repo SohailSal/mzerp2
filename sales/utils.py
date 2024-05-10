@@ -50,13 +50,17 @@ def generate_invoice(id):
     c = canvas.Canvas(buffer, pagesize=letter)
 
 	# Define styles
-    styles = getSampleStyleSheet()
-    heading3 = styles["h3"]
-    heading_style = ParagraphStyle(name="Heading", fontSize=12, bold=True)
-    subheading_style = ParagraphStyle(name="Subheading", fontSize=12)
+    heading3 = getSampleStyleSheet()["h3"]
+    heading4 = getSampleStyleSheet()["h4"]
+    # heading3 = styles["h3"]
     data_style = ParagraphStyle(name="Data", fontSize=10)
     amount_style = ParagraphStyle(name="amount", fontSize=10, alignment=TA_RIGHT)
-
+    custom_style = ParagraphStyle(
+        name='CustomStyle',
+        parent=getSampleStyleSheet()['Normal'],
+        fontSize=12,
+        textColor=colors.red,
+    )
     h = 800
     h = h-50
     c.drawString(30, h, company_name)
@@ -74,11 +78,11 @@ def generate_invoice(id):
     cnt = len(products)
 
 	# Create product table
-    data = [[Paragraph("PRODUCT", heading_style), Paragraph("QUANTITY", heading_style), Paragraph("PRICE (Rs.)", heading_style), Paragraph("AMOUNT (Rs.)", heading_style)]]
+    data = [[Paragraph("PRODUCT", heading3), Paragraph("QUANTITY", heading3), Paragraph("PRICE (Rs.)", heading3), Paragraph("AMOUNT (Rs.)", heading3)]]
     data.extend([[Paragraph(p["name"], data_style), Paragraph(str(p["quantity"]), data_style), Paragraph(f"{p['price']:.2f}", amount_style), Paragraph(f"{p['quantity'] * p['price']:0,.2f}", amount_style)] for p in products])
 
     total_amount = sum([p["quantity"] * p["price"] for p in products])
-    data.extend([[Paragraph("Total Amount", data_style), Paragraph(""), Paragraph(""), Paragraph(f"Rs.{total_amount:0,.2f}", amount_style)]])
+    data.extend([[Paragraph("Total Amount", heading4), Paragraph(""), Paragraph(""), Paragraph(f"Rs.{total_amount:0,.2f}", amount_style)]])
 
     table = Table(data, colWidths=[100, 100, 100, 100], style=[('LINEABOVE',(0,1),(3,1),1,colors.black), ('LINEBEFORE',(3,1),(3,cnt),1,colors.black), ('LINEAFTER',(3,1),(3,cnt),1,colors.black), ('LINEABOVE',(-1,-1),(-1,-1),1,colors.black), ('LINEBELOW',(-1,-1),(-1,-1),1,colors.black,0,None,None,2,2)])
 
