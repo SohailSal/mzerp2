@@ -73,3 +73,12 @@ class Entry(models.Model):
             'debit': float(self.debit),
             'credit': float(self.credit),
         }
+
+class Closing(models.Model):
+    year = models.ForeignKey(Year, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    pre = models.BooleanField()
+    amount = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
+    
+    def __str__(self):
+        return f"Entry {self.id}"
