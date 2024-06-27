@@ -12,3 +12,6 @@ python manage.py loaddata base/sample
 python manage.py loaddata ledger/sample
 python manage.py runserver
 goto localhost:8000 and login with the above username and password
+
+Alternately, you may follow instructions given in following blog post:
+https://bittenbook.com/steps-to-install-a-django-project/
