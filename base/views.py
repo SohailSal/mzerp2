@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .models import Setting, Year
+from .utils import close
 from ledger.models import Category, Account, Entry
 from icecream import ic
 import fiscalyear
@@ -92,6 +93,13 @@ def year_delete(request,id):
 	year.delete()
 	messages.success(request, 'The year has been deleted successfully.')
 	return HttpResponseRedirect(reverse('base:years'))
+
+def year_close(request,id):
+    year = get_object_or_404(Year, pk=id)
+    str1 = close(year)
+    ic(str1)
+	# messages.success(request, 'The year has been deleted successfully.')
+    return HttpResponseRedirect(reverse('base:years'))
 
 # logins
 
