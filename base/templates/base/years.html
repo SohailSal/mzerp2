@@ -37,10 +37,12 @@
               {% csrf_token %}
               <input type="submit" value="Delete" class="btn btn-outline-danger btn-sm"/>
             </form>
+            {% if not year.closed %}
             <form action="{% url 'base:year_close' year.pk %}" method="post" class="">
               {% csrf_token %}
               <input type="submit" value="Close" class="btn btn-outline-secondary btn-sm"/>
             </form>
+            {% endif %}
           </div>
         </td>
       </tr>

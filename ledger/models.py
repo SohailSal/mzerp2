@@ -81,4 +81,4 @@ class Closing(models.Model):
     amount = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
     
     def __str__(self):
-        return f"Entry {self.id}"
+        return f"Closing year {self.id}"

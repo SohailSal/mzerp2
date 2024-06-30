@@ -4,6 +4,7 @@ class Year(models.Model):
     year = models.IntegerField(unique=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    closed = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.year)
