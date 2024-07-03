@@ -31,6 +31,7 @@ def settings_save(request):
     arr.append(int(request.POST['customers']))
     arr.append(int(request.POST['year']))
     arr.append(int(request.POST['suspense']))
+    arr.append(int(request.POST['retained']))
     settings = Setting.objects.all()
     counter = 0
     for setting in settings:

@@ -40,6 +40,14 @@
       }
     },
     {
+      "model": "base.setting",
+      "pk": 6,
+      "fields": {
+        "name": "retained",
+        "value": 4
+      }
+    },
+    {
       "model": "base.year",
       "pk": 1,
       "fields": {

@@ -14,8 +14,8 @@ def close(yr):
     end_dt = yr.end_date.strftime("%Y-%m-%d")
     ref = utils.generate_trans_number(end_dt)
     document = get_object_or_404(Document, pk=1)
-    suspense_setting = Setting.objects.filter(name__iexact='suspense').first().value
-    suspense = get_object_or_404(Account, pk=suspense_setting)
+    retained_setting = Setting.objects.filter(name__iexact='retained').first().value
+    retained = get_object_or_404(Account, pk=retained_setting)
 
     account_balances = Account.objects.filter(
         Q(account_number__startswith='4') | Q(account_number__startswith='5')
@@ -32,8 +32,6 @@ def close(yr):
     ).annotate(
         total=Sum('entry__debit') - Sum('entry__credit')
     ).values('id', 'name', 'total')
-
-    # ic(account_balances)
 
     try:
         with trans.atomic():
@@ -59,10 +57,10 @@ def close(yr):
                     entry =Entry(transaction=transaction, account=account, debit=abs(balance['total']), credit=0)
                     entry.save()
             if g_total > 0:
-                entry =Entry(transaction=transaction, account=suspense, debit=abs(g_total), credit=0)
+                entry =Entry(transaction=transaction, account=retained, debit=abs(g_total), credit=0)
                 entry.save()
             else:
-                entry =Entry(transaction=transaction, account=suspense, debit=0, credit=abs(g_total))
+                entry =Entry(transaction=transaction, account=retained, debit=0, credit=abs(g_total))
                 entry.save()
             for balance in account_balances:
                 account = get_object_or_404(Account, pk=balance['id'])
@@ -70,12 +68,12 @@ def close(yr):
                 closing.save()
             for balance in account_balances_bs:
                 account = get_object_or_404(Account, pk=balance['id'])
-                if account.id == suspense.id:
-                    closing = Closing(year=yr, account=account, pre=0, amount=g_total)
-                    closing.save()
-                else:
-                    closing = Closing(year=yr, account=account, pre=0, amount=balance['total'])
-                    closing.save()
+                closing = Closing(year=yr, account=account, pre=0, amount=balance['total'])
+                closing.save()
+            closing = Closing(year=yr, account=retained, pre=0, amount=g_total)
+            closing.save()
+            yr.closed = True
+            yr.save()
 
     except (DatabaseError) as e:
         ic(e)
