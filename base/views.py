@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from .models import Setting, Year
 from .utils import close
 from ledger.models import Category, Account, Entry
+from django.db.models import Sum, Q
 from icecream import ic
 import fiscalyear
 from django.contrib.auth import authenticate, login as auth_login, logout
@@ -101,6 +102,24 @@ def year_close(request,id):
     ic(str1)
     messages.success(request, 'The year has been closed successfully.')
     return HttpResponseRedirect(reverse('base:years'))
+
+def merge(request):
+    yr = get_object_or_404(Year, pk=1)
+    start_dt = yr.start_date.strftime("%Y-%m-%d")
+    end_dt = yr.end_date.strftime("%Y-%m-%d")
+
+    account_balances = Account.objects.filter(
+        Q(account_number__startswith='4') | Q(account_number__startswith='5')
+    ).filter(
+        entry__transaction__date__range=(start_dt, end_dt)
+    ).annotate(
+        total=Sum('entry__debit') - Sum('entry__credit')
+    ).values('id', 'name', 'total')
+
+    ic(account_balances)
+
+    return HttpResponseRedirect(reverse('base:years'))
+    
 
 # logins
 

@@ -12,6 +12,7 @@ urlpatterns = [
     path('year_post', views.year_post, name='year_post'),
     path('year_delete/<int:id>', views.year_delete, name='year_delete'),
     path('year_close/<int:id>', views.year_close, name='year_close'),
+	path('merge',views.merge,name='merge'),
 
 # logins
     path('home', views.home, name="home"),
