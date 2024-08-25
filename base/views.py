@@ -63,7 +63,9 @@ def year_post(request):
     # ic(a.start.year)
     # ic(a.end.month)
     # ic(a.end.year)
-    year = Year(year=a.fiscal_year, start_date=a.start.strftime("%Y-%m-%d %H:%M:%S"), end_date=a.end.strftime("%Y-%m-%d %H:%M:%S"))
+    last_year = Year.objects.last().id
+    ic(last_year)
+    year = Year(year=a.fiscal_year, start_date=a.start.strftime("%Y-%m-%d %H:%M:%S"), end_date=a.end.strftime("%Y-%m-%d %H:%M:%S"), previous=last_year)
     try:
         year.full_clean()
         year.save()
