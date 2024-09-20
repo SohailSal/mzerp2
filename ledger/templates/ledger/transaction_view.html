@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+{% block title %} View Transaction {% endblock %}
+{% block mainhead %} Ledger {% endblock %}
+{% block subhead %} View Transaction {% endblock %}
+{% block content %}
+
+<div>
+  <a href="{% url 'ledger:transactions' %}" class="btn btn-outline-primary btn-sm">Bact to Transactions</a>
+</div>
+<div class="">
+  <br>
+  <p><strong>Description:</strong> {{transaction.description}}</p>
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>Head of Account</th>
+        <th>Debit</th>
+        <th>Credit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in transaction.entry_set.all %}
+      <tr>
+        <td>{{ entry.account }}</td>
+        <td>{{ entry.debit }}</td>
+        <td>{{ entry.credit }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+            
+{% endblock %}

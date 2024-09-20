@@ -17,7 +17,14 @@ from . import utils
 # Transactions CRUD
 @login_required
 def transactions(request):
-	transactions = Transaction.objects.order_by('id')
+	year_setting = Setting.objects.filter(name__iexact='year').first().value
+	year = get_object_or_404(Year, pk=year_setting)
+	start_date = year.start_date.strftime("%Y-%m-%d")
+	end_date = year.end_date.strftime("%Y-%m-%d")
+	transactions = Transaction.objects.order_by('id').filter(
+        date__range=(start_date, end_date)
+	)
+
 	return render(request, 'ledger/transactions.html', context={"transactions": transactions})
 
 @login_required
@@ -58,6 +65,10 @@ def transaction_post(request):
 		return JsonResponse({'errors':e.message_dict}, safe=False)
 
 	return JsonResponse({'messages':{'success':'The document saved!'}}, safe=False)
+
+def transaction_view(request,id):
+	transaction = get_object_or_404(Transaction, pk=id)
+	return render(request, 'ledger/transaction_view.html', context={"transaction": transaction})
 
 def transaction_delete(request,id):
 	trans = get_object_or_404(Transaction, pk=id)

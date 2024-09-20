@@ -74,7 +74,14 @@ def customer_delete(request,id):
 
 @login_required
 def invoices(request):
-	invoices = Invoice.objects.order_by('id')
+	#invoices = Invoice.objects.order_by('id')
+	year_setting = Setting.objects.filter(name__iexact='year').first().value
+	year = get_object_or_404(Year, pk=year_setting)
+	start_date = year.start_date.strftime("%Y-%m-%d")
+	end_date = year.end_date.strftime("%Y-%m-%d")
+	invoices = Invoice.objects.order_by('id').filter(
+        invoice_date__range=(start_date, end_date)
+	)
 	return render(request, 'sales/invoices.html', context={"invoices": invoices})
 
 @login_required
@@ -92,7 +99,7 @@ def invoice_post(request):
 	# invoice_number = data['invoice_number']
 	invoice_date = data['invoice_date'] if data['invoice_date'] else None
 	invoice_number = utils.generate_invoice_number(invoice_date) if data['invoice_date'] else None
-	customer = None if (data['customer'] == '') else get_object_or_404(Customer, pk=data['customer'])
+	customer = None if (data['customer'] == '0') else get_object_or_404(Customer, pk=data['customer'])
 	description = data['description']
 	document = get_object_or_404(Document, pk=2)
 	year_setting = Setting.objects.filter(name__iexact='year').first().value
