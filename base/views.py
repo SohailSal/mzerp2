@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from .models import Setting, Year
 from .utils import close
-from ledger.models import Category, Account, Entry
+from ledger.models import Category, Account, Entry, Closing
 from django.db.models import Sum, Q
 from icecream import ic
 import fiscalyear
@@ -77,7 +77,7 @@ def year_post(request):
 		# fiscalyear.setup_fiscal_calendar(start_month=7)
 		# ic(a.start)
 		# ic(a.end)
-        return render(request, 'base/year_add.html', 
+        return render(request, 'base/year_add.html',
             context={"year":request.POST['year'],"errors":e}
         )
 
@@ -118,16 +118,50 @@ def merge(request):
         total=Sum('entry__debit') - Sum('entry__credit')
     ).values('id', 'name', 'total')
 
-    ic(account_balances)
+    closings = Closing.objects.filter(
+        Q(account__account_number__startswith='4') | Q(account__account_number__startswith='5')
+    ).values('id', 'amount')
+
+    merged_data = []
+
+    for data1 in account_balances:
+        for data2 in closings:
+            if data1['id'] == data2['id']:
+                merged_data.append({
+                    'id': data1['id'],
+                    'name': data1['name'],
+                    'amount': data2['amount']
+                })
+
+    # ic(account_balances)
+    # ic(closings)
+    ic(merged_data)
 
     return HttpResponseRedirect(reverse('base:years'))
-    
+
+def merge_data(request):
+    model1_data = Model1.objects.all()
+    model2_data = Model2.objects.all()
+
+    merged_data = []
+
+    for data1 in model1_data:
+        for data2 in model2_data:
+            if data1.account_number == data2.account_number:
+                merged_data.append({
+                    'account_number': data1.account_number,
+                    'data_from_model1': data1.some_field,
+                    'data_from_model2': data2.some_field
+                })
+
+    return render(request, 'merged_data.html', {'merged_data': merged_data})
+
 
 # logins
 
 def home(request):
     return render(request, 'base/home.html')
- 
+
 @login_required
 def dashboard(request):
 	users = User.objects.order_by('id')
@@ -137,13 +171,13 @@ def login(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-         
+
         if not User.objects.filter(username=username).exists():
             messages.error(request, 'Invalid Username')
             return redirect('/login')
-         
+
         user = authenticate(username=username, password=password)
-         
+
         if user is None:
             messages.error(request, "Invalid Password")
             return redirect('/login')
@@ -154,34 +188,34 @@ def login(request):
                  return redirect(next_url)
             else:
                  return redirect('/dashboard')
-     
+
     return render(request, 'base/login.html')
- 
+
 def register(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         username = request.POST.get('username')
         password = request.POST.get('password')
-         
+
         user = User.objects.filter(username=username)
-         
+
         if user.exists():
             messages.info(request, "Username already taken!")
             return redirect('/register')
-         
+
         user = User.objects.create_user(
             first_name=first_name,
             last_name=last_name,
             username=username
         )
-         
+
         user.set_password(password)
         user.save()
-         
+
         messages.info(request, "Account created Successfully!")
         return redirect('/register')
-     
+
     return render(request, 'base/register.html')
 
 def logout_view(request):
