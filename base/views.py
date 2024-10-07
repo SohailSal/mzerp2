@@ -120,13 +120,13 @@ def merge(request):
 
     closings = Closing.objects.filter(
         Q(account__account_number__startswith='4') | Q(account__account_number__startswith='5')
-    ).values('id', 'amount')
+    ).values('account', 'amount')
 
     merged_data = []
 
     for data1 in account_balances:
         for data2 in closings:
-            if data1['id'] == data2['id']:
+            if data1['id'] == data2['account']:
                 merged_data.append({
                     'id': data1['id'],
                     'name': data1['name'],
