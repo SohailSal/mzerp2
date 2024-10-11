@@ -139,24 +139,6 @@ def merge(request):
 
     return HttpResponseRedirect(reverse('base:years'))
 
-def merge_data(request):
-    model1_data = Model1.objects.all()
-    model2_data = Model2.objects.all()
-
-    merged_data = []
-
-    for data1 in model1_data:
-        for data2 in model2_data:
-            if data1.account_number == data2.account_number:
-                merged_data.append({
-                    'account_number': data1.account_number,
-                    'data_from_model1': data1.some_field,
-                    'data_from_model2': data2.some_field
-                })
-
-    return render(request, 'merged_data.html', {'merged_data': merged_data})
-
-
 # logins
 
 def home(request):
@@ -237,7 +219,7 @@ def reports_ledger(request):
     account = get_object_or_404(Account, pk=request.POST['acc'])
     entries = [i.ledger() for i in Entry.objects.filter(account=account, transaction__date__range=(start,end))]
     if entries:
-        response = utils.generate_report(entries)
+        response = utils.generate_report(entries, account)
         return response
     else:
         messages.warning(request, "No entries were present!")

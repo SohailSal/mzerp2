@@ -3,12 +3,12 @@ import io
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from .models import Category, Transaction, Document, Account, Entry
+from .models import Category, Transaction, Document, Account, Entry, Closing
 from base.models import Setting, Year
 from icecream import ic
 from datetime import datetime
 
-def generate_report(ledger_data):
+def generate_report(ledger_data, account):
     # Create a new workbook and add a worksheet
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output)
@@ -31,7 +31,11 @@ def generate_report(ledger_data):
     format2 = workbook.add_format({'num_format': '#,##0.00'})
     worksheet.set_column(0, 0, 18)
 
-    for row, data in enumerate(ledger_data, start=1):
+    ob = Closing.objects.filter(account = account).last().amount
+    worksheet.write(1,2, 'Opening Balance')
+    worksheet.write(1,5, ob, format2)
+    balance = float(ob)
+    for row, data in enumerate(ledger_data, start=2):
         balance += float(data['debit']) - float(data['credit'])
 
         worksheet.write(row, 0, data['date'], format1)
@@ -93,6 +97,9 @@ def generate_tb(dt):
     ).annotate(
         total=Sum('entry__debit') - Sum('entry__credit')
     ).values('name', 'total')
+
+    closing_balances = Closing.objects.filter(pre = 0)
+    ic(closing_balances)
 
     # Write account names and balances to the worksheet
 
