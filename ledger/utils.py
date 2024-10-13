@@ -1,6 +1,6 @@
 import xlsxwriter
 import io
-from django.db.models import Sum
+from django.db.models import Sum, Q, F
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from .models import Category, Transaction, Document, Account, Entry, Closing
@@ -85,23 +85,46 @@ def generate_tb(dt):
     worksheet.write('C1', 'Debit', bold_format)
     worksheet.write('D1', 'Credit', bold_format)
 
-    # Retrieve account balances using Django's aggregation
-
     year_setting = Setting.objects.filter(name__iexact='year').first().value
     year = get_object_or_404(Year, pk=year_setting)
     start_dt = year.start_date.strftime("%Y-%m-%d")
     # ic(start_dt)
     # ic(dt)
+
+    # Retrieve account balances using Django's aggregation
+
     account_balances = Account.objects.filter(
         entry__transaction__date__range=(start_dt, dt)
     ).annotate(
-        total=Sum('entry__debit') - Sum('entry__credit')
-    ).values('name', 'total')
+        amount=Sum('entry__debit') - Sum('entry__credit')
+    ).values('id','name', 'amount', 'category')
 
-    closing_balances = Closing.objects.filter(pre = 0)
-    ic(closing_balances)
+    closings = Closing.objects.filter(year = year.previous).filter(pre = 0).filter(
+        Q(account__account_number__startswith='1') | Q(account__account_number__startswith='2') | Q(account__account_number__startswith='3')
+    ).annotate(
+        name = F('account__name')
+    ).values('name','account', 'amount', 'account__category__id')
+    # ic(closings)
+    uncommon_amounts = closings.exclude(account__in=account_balances.values('id')).values('account_id','name','amount')
+    uncommon_new = account_balances.exclude(id__in=closings.values('account')).values('id','name','amount')
 
-    # Write account names and balances to the worksheet
+    merged_data = []
+
+    for data1 in account_balances:
+        for data2 in closings:
+            if data1['id'] == data2['account']:
+                merged_data.append({
+                    'id': data1['id'],
+                    'name': data1['name'],
+                    'amount': data1['amount'] + data2['amount']
+                })
+
+    final_trial_balance = merged_data + list(uncommon_amounts)
+    finalll = final_trial_balance + list(uncommon_new)
+    # ic(uncommon_amounts)
+    # ic(merged_data)
+    # ic(final_trial_balance)
+    ic(finalll)
 
     categories = tree()
 
@@ -118,12 +141,12 @@ def generate_tb(dt):
     # row = 1
         for account in accounts:
             worksheet.write(row, 1, account['name'])
-            if account['total'] >= 0:
-                worksheet.write(row, 2, account['total'], currency_format)
-                total_debit = total_debit + account['total']
+            if account['amount'] >= 0:
+                worksheet.write(row, 2, account['amount'], currency_format)
+                total_debit = total_debit + account['amount']
             else:
-                worksheet.write(row, 3, abs(account['total']), currency_format)
-                total_credit = total_credit + abs(account['total'])
+                worksheet.write(row, 3, abs(account['amount']), currency_format)
+                total_credit = total_credit + abs(account['amount'])
             # worksheet.write(row, 2, account['category'])
             # worksheet.write(row, 3, account['id'])
             row += 1
@@ -241,7 +264,7 @@ def generate_account_number(category):
     str1 = ""
     for ele in chunks:
         str1 += ele
- 
+
     # ic(chunks)
     # ic(str1)
     return str1
@@ -264,5 +287,5 @@ def generate_trans_number(d):
     str1 = ""
     for ele in chunks:
         str1 += ele
- 
+
     return str1
