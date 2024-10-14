@@ -96,17 +96,20 @@ def generate_tb(dt):
     account_balances = Account.objects.filter(
         entry__transaction__date__range=(start_dt, dt)
     ).annotate(
-        amount=Sum('entry__debit') - Sum('entry__credit')
-    ).values('id','name', 'amount', 'category')
+        amount=Sum('entry__debit') - Sum('entry__credit'),
+        acc = F('id')
+    ).values('id','acc','name', 'amount', 'category')
 
     closings = Closing.objects.filter(year = year.previous).filter(pre = 0).filter(
         Q(account__account_number__startswith='1') | Q(account__account_number__startswith='2') | Q(account__account_number__startswith='3')
     ).annotate(
-        name = F('account__name')
-    ).values('name','account', 'amount', 'account__category__id')
+        name = F('account__name'),
+        acc = F('account'),
+        category = F('account__category__id')
+    ).values('name','acc','account', 'amount', 'category')
     # ic(closings)
-    uncommon_amounts = closings.exclude(account__in=account_balances.values('id')).values('account_id','name','amount')
-    uncommon_new = account_balances.exclude(id__in=closings.values('account')).values('id','name','amount')
+    uncommon_amounts = closings.exclude(account__in=account_balances.values('id')).values('acc','name','amount','category')
+    uncommon_new = account_balances.exclude(id__in=closings.values('account')).values('acc','name','amount','category')
 
     merged_data = []
 
@@ -114,9 +117,10 @@ def generate_tb(dt):
         for data2 in closings:
             if data1['id'] == data2['account']:
                 merged_data.append({
-                    'id': data1['id'],
+                    'acc': data1['id'],
                     'name': data1['name'],
-                    'amount': data1['amount'] + data2['amount']
+                    'amount': data1['amount'] + data2['amount'],
+                    'category': data1['category']
                 })
 
     final_trial_balance = merged_data + list(uncommon_amounts)
@@ -133,9 +137,11 @@ def generate_tb(dt):
     total_credit = 0
     for category in categories:
         # ic(category["id"])
-        cat = get_object_or_404(Category, pk=category["id"])
-        # ic(cat)
-        accounts = account_balances.filter(category=cat)
+        # cat = get_object_or_404(Category, pk=category["id"])
+        # accounts = account_balances.filter(category=cat)
+
+        accounts = [ i for i in finalll if i['category'] == category['id']]
+
         row += 1
         worksheet.write(row, 0, category["name"])
     # row = 1
