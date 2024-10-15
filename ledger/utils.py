@@ -108,7 +108,7 @@ def generate_tb(dt):
         category = F('account__category__id')
     ).values('name','acc','account', 'amount', 'category')
     # ic(closings)
-    uncommon_amounts = closings.exclude(account__in=account_balances.values('id')).values('acc','name','amount','category')
+    uncommon_openings = closings.exclude(account__in=account_balances.values('id')).values('acc','name','amount','category')
     uncommon_new = account_balances.exclude(id__in=closings.values('account')).values('acc','name','amount','category')
 
     merged_data = []
@@ -123,12 +123,7 @@ def generate_tb(dt):
                     'category': data1['category']
                 })
 
-    final_trial_balance = merged_data + list(uncommon_amounts)
-    finalll = final_trial_balance + list(uncommon_new)
-    # ic(uncommon_amounts)
-    # ic(merged_data)
-    # ic(final_trial_balance)
-    ic(finalll)
+    trial_balance = merged_data + list(uncommon_openings) + list(uncommon_new)
 
     categories = tree()
 
@@ -140,7 +135,7 @@ def generate_tb(dt):
         # cat = get_object_or_404(Category, pk=category["id"])
         # accounts = account_balances.filter(category=cat)
 
-        accounts = [ i for i in finalll if i['category'] == category['id']]
+        accounts = [ i for i in trial_balance if i['category'] == category['id']]
 
         row += 1
         worksheet.write(row, 0, category["name"])
