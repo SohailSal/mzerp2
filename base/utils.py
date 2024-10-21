@@ -1,9 +1,9 @@
-from .models import Setting
+from .models import Setting, Year
 from ledger.models import Document, Category, Account, Transaction, Entry, Closing
 from icecream import ic
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F
 from django.db import transaction as trans
-from django.db import DatabaseError 
+from django.db import DatabaseError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from ledger import utils
@@ -16,6 +16,7 @@ def close(yr):
     document = get_object_or_404(Document, pk=1)
     retained_setting = Setting.objects.filter(name__iexact='retained').first().value
     retained = get_object_or_404(Account, pk=retained_setting)
+    prev_yr = Year.objects.filter(id=yr.previous)
 
     account_balances = Account.objects.filter(
         Q(account_number__startswith='4') | Q(account_number__startswith='5')
@@ -32,6 +33,18 @@ def close(yr):
     ).annotate(
         total=Sum('entry__debit') - Sum('entry__credit')
     ).values('id', 'name', 'total')
+
+
+    if yr.previous > 0 & prev_yr.closed == 1:
+        closings = Closing.objects.filter(year = yr.previous).filter(pre = 0).filter(
+            Q(account__account_number__startswith='1') | Q(account__account_number__startswith='2') | Q(account__account_number__startswith='3')
+        ).annotate(
+            name = F('account__name'),
+            acc = F('account'),
+            category = F('account__category__id')
+        ).values('name','acc','account', 'amount', 'category')
+        # ic(closings)
+        uncommon_openings = closings.exclude(account__in=account_balances.values('id')).values('acc','name','amount','category')
 
     try:
         with trans.atomic():
