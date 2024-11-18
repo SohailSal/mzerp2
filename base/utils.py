@@ -51,13 +51,13 @@ def close(yr):
             name = F('account__name'),
             acc = F('account'),
             category = F('account__category__id')
-        ).values('name','acc','account', 'amount', 'category')
+        ).values('acc','name','amount','category')
         # ic(closings)
-        uncommon_openings = closings.exclude(account__in=combined.values('id')).values('acc','name','amount','category')
+        uncommon_openings = closings.exclude(account__in=account_balances_bs.values('id')).values('acc','name','amount','category')
         uncommon_new = combined.exclude(id__in=closings.values('account')).values('acc','name','amount','category')
-    ic(closings)
+    # ic(closings)
     ic(uncommon_openings)
-    ic(uncommon_new)
+    # ic(uncommon_new)
     # try:
     #     with trans.atomic():
     #         g_total = 0
