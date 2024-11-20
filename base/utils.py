@@ -55,8 +55,32 @@ def close(yr):
         # ic(closings)
         uncommon_openings = closings.exclude(account__in=account_balances_bs.values('id')).values('acc','name','amount','category')
         uncommon_new = combined.exclude(id__in=closings.values('account')).values('acc','name','amount','category')
-    # ic(closings)
-    ic(uncommon_openings)
+
+    account_balances_bs = Account.objects.filter(
+        Q(account_number__startswith='1') | Q(account_number__startswith='2') | Q(account_number__startswith='3')
+    ).filter(
+        entry__transaction__date__range=(start_dt, end_dt)
+    ).annotate(
+        total=Sum('entry__debit') - Sum('entry__credit'),
+        amount=Sum('entry__debit') - Sum('entry__credit'),
+        acc = F('id')
+    ).values('id', 'acc', 'name', 'total', 'amount', 'category')
+
+    # ic(uncommon_openings)
+    merged_data = []
+
+    for data1 in account_balances_bs:
+        for data2 in closings:
+            if data1['id'] == data2['acc']:
+                merged_data.append({
+                    'acc': data1['id'],
+                    'name': data1['name'],
+                    'amount': data1['amount'] + data2['amount'],
+                    'category': data1['category']
+                })
+
+    result = merged_data + list(uncommon_openings) + list(uncommon_new)
+    ic(result)
     # ic(uncommon_new)
     # try:
     #     with trans.atomic():
