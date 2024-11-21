@@ -71,7 +71,6 @@ def close(yr):
     result = merged_data + list(uncommon_openings) + list(uncommon_new)
     # ic(result)
     # ic(account_balances)
-
     try:
         with trans.atomic():
             g_total = 0
@@ -108,10 +107,12 @@ def close(yr):
             for balance in result:
                 account = get_object_or_404(Account, pk=balance['acc'])
                 if account == retained:
-                    closing = Closing(year=yr, account=account, pre=0, amount=balance['amount']+g_total)
+                    ob = get_object_or_404(Closing, year = yr.previous, pre = 0, account = retained)
+                    closing = Closing(year=yr, account=account, pre=0, amount=ob.amount+g_total)
+                    closing.save()
                 else:
                     closing = Closing(year=yr, account=account, pre=0, amount=balance['amount'])
-                closing.save()
+                    closing.save()
             # closing = Closing(year=yr, account=retained, pre=0, amount=g_total)
             # closing.save()
             yr.closed = True
