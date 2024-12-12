@@ -101,8 +101,8 @@ def year_delete(request,id):
 def year_close(request,id):
     year = get_object_or_404(Year, pk=id)
     str1 = close(year)
-    ic(str1)
-    messages.success(request, 'The year has been closed successfully.')
+    # ic(str1)
+    messages.success(request, str1)
     return HttpResponseRedirect(reverse('base:years'))
 
 def merge(request):
