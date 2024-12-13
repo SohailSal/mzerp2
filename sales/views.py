@@ -126,6 +126,10 @@ def invoice_post(request):
 				amount = float(entry['amount']) if entry['amount'] else None
 				total = (total + amount) if amount else None
 				items.append(InvoiceItem(invoice=invoice, item=item, quantity=quantity, rate=rate, amount=amount))
+				# update stock item's quantity
+				item.quantity = float(item.quantity) - quantity
+				item.save()
+
 			for item in items:
 				item.full_clean()
 			for item in items:

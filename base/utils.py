@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from ledger import utils
 
 def close(yr):
-
+    # get set essential data
     start_dt = yr.start_date.strftime("%Y-%m-%d")
     end_dt = yr.end_date.strftime("%Y-%m-%d")
     ref = utils.generate_trans_number(end_dt)
@@ -17,34 +17,33 @@ def close(yr):
     retained_setting = Setting.objects.filter(name__iexact='retained').first().value
     retained = get_object_or_404(Account, pk=retained_setting)
     prev_yr = Year.objects.filter(id=yr.previous).first()
+    closings = None
+    uncommon_openings = None
+    uncommon_new = None
+    merged_data = []
     str1 = "Nothing happened!"
 
+    # get sum of current year's PnL accounts' transactions
     account_balances = Account.objects.filter(
         Q(account_number__startswith='4') | Q(account_number__startswith='5')
     ).filter(
         entry__transaction__date__range=(start_dt, end_dt)
     ).annotate(
-        total=Sum('entry__debit') - Sum('entry__credit'),
         amount=Sum('entry__debit') - Sum('entry__credit'),
         acc = F('id')
-    ).values('id', 'acc', 'name', 'total', 'amount', 'category')
+    ).values('acc', 'name', 'amount', 'category')
 
+    # get sum of current year's BS accounts' transactions
     account_balances_bs = Account.objects.filter(
         Q(account_number__startswith='1') | Q(account_number__startswith='2') | Q(account_number__startswith='3')
     ).filter(
         entry__transaction__date__range=(start_dt, end_dt)
     ).annotate(
-        total=Sum('entry__debit') - Sum('entry__credit'),
         amount=Sum('entry__debit') - Sum('entry__credit'),
         acc = F('id')
-    ).values('id', 'acc', 'name', 'total', 'amount', 'category')
+    ).values('acc', 'name', 'amount', 'category')
 
-    # ic(combined)
-
-    closings = None
-    uncommon_openings = None
-    uncommon_new = None
-    merged_data = []
+    # closing logic for any year but first
     if (yr.previous > 0) and (prev_yr.closed):
         combined = account_balances | account_balances_bs
         closings = Closing.objects.filter(year = yr.previous).filter(pre = 0).filter(
@@ -61,9 +60,9 @@ def close(yr):
 
         for data1 in combined:
             for data2 in closings:
-                if data1['id'] == data2['acc']:
+                if data1['acc'] == data2['acc']:
                     merged_data.append({
-                        'acc': data1['id'],
+                        'acc': data1['acc'],
                         'name': data1['name'],
                         'amount': data1['amount'] + data2['amount'],
                         'category': data1['category']
@@ -76,24 +75,24 @@ def close(yr):
             with trans.atomic():
                 g_total = 0
                 for balance in account_balances:
-                    g_total = g_total + balance['total']
-                    account = get_object_or_404(Account, pk=balance['id'])
-                    closing = Closing(year=yr, account=account, pre=1, amount=balance['total'])
+                    g_total = g_total + balance['amount']
+                    account = get_object_or_404(Account, pk=balance['acc'])
+                    closing = Closing(year=yr, account=account, pre=1, amount=balance['amount'])
                     closing.save()
                 for balance in result:
                     account = get_object_or_404(Account, pk=balance['acc'])
                     closing = Closing(year=yr, account=account, pre=1, amount=balance['amount'])
                     closing.save()
-                ic(g_total)
+                # ic(g_total)
                 transaction = Transaction(ref=ref, date=end_dt, document=document, year=yr, description="Closing Balance")
                 transaction.save()
                 for balance in account_balances:
-                    account = get_object_or_404(Account, pk=balance['id'])
-                    if balance['total'] > 0:
-                        entry =Entry(transaction=transaction, account=account, debit=0, credit=abs(balance['total']))
+                    account = get_object_or_404(Account, pk=balance['acc'])
+                    if balance['amount'] > 0:
+                        entry =Entry(transaction=transaction, account=account, debit=0, credit=abs(balance['amount']))
                         entry.save()
                     else:
-                        entry =Entry(transaction=transaction, account=account, debit=abs(balance['total']), credit=0)
+                        entry =Entry(transaction=transaction, account=account, debit=abs(balance['amount']), credit=0)
                         entry.save()
                 if g_total > 0:
                     entry =Entry(transaction=transaction, account=retained, debit=abs(g_total), credit=0)
@@ -102,7 +101,7 @@ def close(yr):
                     entry =Entry(transaction=transaction, account=retained, debit=0, credit=abs(g_total))
                     entry.save()
                 for balance in account_balances:
-                    account = get_object_or_404(Account, pk=balance['id'])
+                    account = get_object_or_404(Account, pk=balance['acc'])
                     closing = Closing(year=yr, account=account, pre=0, amount=0)
                     closing.save()
                 for balance in result:
@@ -123,29 +122,30 @@ def close(yr):
             ic(e)
             return JsonResponse({'errors':e.message_dict}, safe=False)
 
+    #closing logic for first year
     elif (yr.previous == 0):
         try:
             with trans.atomic():
                 g_total = 0
                 for balance in account_balances:
-                    g_total = g_total + balance['total']
-                    account = get_object_or_404(Account, pk=balance['id'])
-                    closing = Closing(year=yr, account=account, pre=1, amount=balance['total'])
+                    g_total = g_total + balance['amount']
+                    account = get_object_or_404(Account, pk=balance['acc'])
+                    closing = Closing(year=yr, account=account, pre=1, amount=balance['amount'])
                     closing.save()
                 for balance in account_balances_bs:
                     account = get_object_or_404(Account, pk=balance['acc'])
                     closing = Closing(year=yr, account=account, pre=1, amount=balance['amount'])
                     closing.save()
-                ic(g_total)
+                # ic(g_total)
                 transaction = Transaction(ref=ref, date=end_dt, document=document, year=yr, description="Closing Balance")
                 transaction.save()
                 for balance in account_balances:
-                    account = get_object_or_404(Account, pk=balance['id'])
-                    if balance['total'] > 0:
-                        entry =Entry(transaction=transaction, account=account, debit=0, credit=abs(balance['total']))
+                    account = get_object_or_404(Account, pk=balance['acc'])
+                    if balance['amount'] > 0:
+                        entry =Entry(transaction=transaction, account=account, debit=0, credit=abs(balance['amount']))
                         entry.save()
                     else:
-                        entry =Entry(transaction=transaction, account=account, debit=abs(balance['total']), credit=0)
+                        entry =Entry(transaction=transaction, account=account, debit=abs(balance['amount']), credit=0)
                         entry.save()
                 if g_total > 0:
                     entry =Entry(transaction=transaction, account=retained, debit=abs(g_total), credit=0)
@@ -154,7 +154,7 @@ def close(yr):
                     entry =Entry(transaction=transaction, account=retained, debit=0, credit=abs(g_total))
                     entry.save()
                 for balance in account_balances:
-                    account = get_object_or_404(Account, pk=balance['id'])
+                    account = get_object_or_404(Account, pk=balance['acc'])
                     closing = Closing(year=yr, account=account, pre=0, amount=0)
                     closing.save()
                 for balance in account_balances_bs:
