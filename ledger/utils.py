@@ -26,12 +26,21 @@ def generate_report(ledger_data, account):
         worksheet.write(0, col, header)
 
     balance = 0
+    ob = 0
+    row_count = 3
 
     format1 = workbook.add_format({'num_format': 'd mmmm yyyy'})
     format2 = workbook.add_format({'num_format': '#,##0.00'})
     worksheet.set_column(0, 0, 18)
 
-    ob = Closing.objects.filter(account = account).last().amount
+    year_setting = Setting.objects.filter(name__iexact='year').first().value
+    year = get_object_or_404(Year, pk=year_setting)
+    prev_yr = Year.objects.filter(id = year.previous).first()
+    # start_dt = year.start_date.strftime("%Y-%m-%d")
+
+    if (prev_yr) and (prev_yr.closed):
+        ob = Closing.objects.filter(year = prev_yr, account = account, pre = 0).last().amount
+
     worksheet.write(1,2, 'Opening Balance')
     worksheet.write(1,5, ob, format2)
     balance = float(ob)
@@ -45,16 +54,15 @@ def generate_report(ledger_data, account):
         worksheet.write(row, 4, data['credit'], format2)
         worksheet.write(row, 5, balance, format2)
 
+        row_count = row_count + 1
+
     # Write the totals
     total_debit = sum(float(data['debit']) for data in ledger_data)
     total_credit = sum(float(data['credit']) for data in ledger_data)
 
-
-
-    worksheet.write(row + 2, 1, 'Totals')
-    worksheet.write(row + 2, 3, total_debit, format2)
-
-    worksheet.write(row + 2, 4, total_credit, format2)
+    worksheet.write(row_count, 1, 'Totals')
+    worksheet.write(row_count, 3, total_debit, format2)
+    worksheet.write(row_count, 4, total_credit, format2)
 
     # Save the workbook
     worksheet.autofit()
