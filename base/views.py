@@ -39,6 +39,12 @@ def settings_save(request):
         setting.value = arr[counter]
         setting.save()
         counter = counter + 1
+    
+    # year session update
+    year = get_object_or_404(Year, pk=int(request.POST['year']))
+    request.session["year"] = year.id
+    request.session["year_closed"] = year.closed
+
     messages.success(request, 'The settings have been updated.')
     return HttpResponseRedirect(reverse('base:settings'))
     # return render(request, 'base/dashboard.html')
@@ -100,7 +106,7 @@ def year_delete(request,id):
 
 def year_close(request,id):
     year = get_object_or_404(Year, pk=id)
-    str1 = close(year)
+    str1 = close(request, year)
     # ic(str1)
     messages.success(request, str1)
     return HttpResponseRedirect(reverse('base:years'))
@@ -165,6 +171,12 @@ def login(request):
             return redirect('/login')
         else:
             auth_login(request, user)
+            # setting year session
+            year_setting = Setting.objects.filter(name__iexact='year').first().value
+            year = get_object_or_404(Year, pk=year_setting)
+            request.session["year"] = year.id
+            request.session["year_closed"] = year.closed
+
             next_url = request.GET.get("next")
             if next_url:
                  return redirect(next_url)

@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from ledger import utils
 
-def close(yr):
+def close(request, yr):
     # get set essential data
     start_dt = yr.start_date.strftime("%Y-%m-%d")
     end_dt = yr.end_date.strftime("%Y-%m-%d")
@@ -118,6 +118,8 @@ def close(yr):
                 yr.closed = True
                 yr.save()
                 str1 = "Year closed!"
+                if (request.session.get('year') == yr.id):
+                    request.session['year_closed'] = True
         except (DatabaseError) as e:
             ic(e)
             return JsonResponse({'errors':e.message_dict}, safe=False)
@@ -166,6 +168,8 @@ def close(yr):
                 yr.closed = True
                 yr.save()
                 str1 = "First Year closed!"
+                if (request.session.get('year') == yr.id):
+                    request.session['year_closed'] = True
         except (DatabaseError) as e:
             ic(e)
             return JsonResponse({'errors':e.message_dict}, safe=False)
