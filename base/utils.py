@@ -84,7 +84,7 @@ def close(request, yr):
                     closing = Closing(year=yr, account=account, pre=1, amount=balance['amount'])
                     closing.save()
                 # ic(g_total)
-                transaction = Transaction(ref=ref, date=end_dt, document=document, year=yr, description="Closing Balance")
+                transaction = Transaction(ref=ref, date=end_dt, document=document, year=yr, description="Closing Entry")
                 transaction.save()
                 for balance in account_balances:
                     account = get_object_or_404(Account, pk=balance['acc'])
@@ -139,7 +139,7 @@ def close(request, yr):
                     closing = Closing(year=yr, account=account, pre=1, amount=balance['amount'])
                     closing.save()
                 # ic(g_total)
-                transaction = Transaction(ref=ref, date=end_dt, document=document, year=yr, description="Closing Balance")
+                transaction = Transaction(ref=ref, date=end_dt, document=document, year=yr, description="Closing Entry")
                 transaction.save()
                 for balance in account_balances:
                     account = get_object_or_404(Account, pk=balance['acc'])

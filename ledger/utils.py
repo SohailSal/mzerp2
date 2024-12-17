@@ -39,7 +39,8 @@ def generate_report(ledger_data, account):
     # start_dt = year.start_date.strftime("%Y-%m-%d")
 
     if (prev_yr) and (prev_yr.closed):
-        ob = Closing.objects.filter(year = prev_yr, account = account, pre = 0).last().amount
+        bal = Closing.objects.filter(year = prev_yr, account = account, pre = 0).last() 
+        ob = bal.amount if bal else 0
 
     worksheet.write(1,2, 'Opening Balance')
     worksheet.write(1,5, ob, format2)

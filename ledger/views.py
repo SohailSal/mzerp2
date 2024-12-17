@@ -211,6 +211,18 @@ def account_delete(request,id):
 
 def report(request,id):
 	account = get_object_or_404(Account, pk=id)
-	entries = [i.ledger() for i in Entry.objects.filter(account=account)]
-	response = utils.generate_report(entries, account)
-	return response
+	year_setting = Setting.objects.filter(name__iexact='year').first().value
+	year = get_object_or_404(Year, pk=year_setting)
+	start = year.start_date.strftime("%Y-%m-%d")
+	end = year.end_date.strftime("%Y-%m-%d")
+
+	entries = [i.ledger() for i in Entry.objects.filter(account=account, transaction__date__range=(start,end))]
+
+	# response = utils.generate_report(entries, account)
+	# return response
+	if entries:
+		response = utils.generate_report(entries, account)
+		return response
+	else:
+		messages.warning(request, "No entries were present!")
+		return redirect('ledger:accounts')
