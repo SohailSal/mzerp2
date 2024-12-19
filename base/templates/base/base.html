@@ -99,7 +99,9 @@
                   <li><a class="nav-link {% if request.path == '/ledger/accounts' %}active{% endif %}" href="{% url 'ledger:accounts' %}" >Accounts</a></li>
                   <li><a class="nav-link {% if request.path == '/ledger/account_add' %}active{% endif %}" href="{% url 'ledger:account_add' %}">Add Account</a></li>
                   <li><a class="nav-link {% if request.path == '/ledger/transactions' %}active{% endif %}" href="{% url 'ledger:transactions' %}" >Transactions</a></li>
+                  {% if not 'request.session.year_closed' %}
                   <li><a class="nav-link {% if request.path == '/ledger/transaction_add' %}active{% endif %}" href="{% url 'ledger:transaction_add' %}">Add Transaction</a></li>
+                  {% endif %}
                   <li><a class="nav-link {% if request.path == '/ledger/categories' %}active{% endif %}" href="{% url 'ledger:categories' %}" >Categories</a></li>
                   <li><a class="nav-link {% if request.path == '/ledger/category_add' %}active{% endif %}" href="{% url 'ledger:category_add' %}">Add Category</a></li>
                 </ul>
@@ -114,7 +116,9 @@
                     <li><a class="nav-link {% if request.path == '/sales/customers' %}active{% endif %}" href="{% url 'sales:customers' %}" >Customers</a></li>
                     <li><a class="nav-link {% if request.path == '/sales/customer_add' %}active{% endif %}" href="{% url 'sales:customer_add' %}">Add Customer</a></li>
                     <li><a class="nav-link {% if request.path == '/sales/invoices' %}active{% endif %}" href="{% url 'sales:invoices' %}" >Invoices</a></li>
+                    {% if not 'request.session.year_closed' %}
                     <li><a class="nav-link {% if request.path == '/sales/invoice_add' %}active{% endif %}" href="{% url 'sales:invoice_add' %}">Add Invoice</a></li>
+                    {% endif %}
                 </ul>
               </li>
               <li class="nav-item has-submenu">
@@ -153,10 +157,9 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h5 class="h5">{% block subhead %}{% endblock %}</h5>
+            <h5 class="h5">{% block subhead %}{% endblock %} <font size="3">(Year ending: {{request.session.year}})</font></h5>
           </div>
-          {{ request.session.year }}
-          {{ request.session.year_closed }}
+
           {% block content %}
           {% endblock %}
 

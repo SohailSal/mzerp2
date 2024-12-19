@@ -42,7 +42,8 @@ def settings_save(request):
     
     # year session update
     year = get_object_or_404(Year, pk=int(request.POST['year']))
-    request.session["year"] = year.id
+    end_dt = year.end_date.strftime("%Y-%m-%d")
+    request.session["year"] = end_dt
     request.session["year_closed"] = year.closed
 
     messages.success(request, 'The settings have been updated.')
@@ -174,7 +175,8 @@ def login(request):
             # setting year session
             year_setting = Setting.objects.filter(name__iexact='year').first().value
             year = get_object_or_404(Year, pk=year_setting)
-            request.session["year"] = year.id
+            end_dt = year.end_date.strftime("%Y-%m-%d")
+            request.session["year"] = end_dt
             request.session["year_closed"] = year.closed
 
             next_url = request.GET.get("next")
