@@ -26,4 +26,5 @@ urlpatterns = [
     path('reports_ledger', views.reports_ledger, name='reports_ledger'),
     path('reports_tb', views.reports_tb, name='reports_tb'),
     path('reports_chart_accounts', views.reports_chart_accounts, name='reports_chart_accounts'),
+    path('scenario', views.scenario, name='scenario'),
 ]
